@@ -1,5 +1,27 @@
+imports:
+  - { resource: tables.yml }
+
 services:
+    phpbb.cannedmessages.message.manager:
+        class: phpbb\cannedmessages\message\manager
+        arguments:
+            - '@dbal.conn'
+            - '%phpbb.cannedmessages.tables.cannedmessages%'
+
     phpbb.cannedmessages.listener:
         class: phpbb\cannedmessages\event\main_listener
         tags:
             - { name: event.listener }
+
+    phpbb.cannedmessages.mcp.controller:
+        class: phpbb\cannedmessages\controller\mcp_controller
+        arguments:
+            - '@user'
+            - '@template'
+            - '@language'
+            - '@log'
+            - '@request'
+            - '@phpbb.cannedmessages.message.manager'
+            - '%core.root_path%'
+            - '%core.adm_relative_path%'
+            - '%core.php_ext%'

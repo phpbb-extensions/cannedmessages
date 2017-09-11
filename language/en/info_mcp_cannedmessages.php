@@ -1,0 +1,28 @@
+<?php
+/**
+ *
+ * Canned Messages. An extension for the phpBB Forum Software package.
+ *
+ * @copyright (c) 2017 phpBB Limited <https://www.phpbb.com>
+ * @license GNU General Public License, version 2 (GPL-2.0)
+ *
+ */
+
+if (!defined('IN_PHPBB'))
+{
+	exit;
+}
+
+if (empty($lang) || !is_array($lang))
+{
+	$lang = array();
+}
+
+$lang = array_merge($lang, array(
+	'MCP_CANNEDMESSAGES_TITLE'		=> 'Canned Messages',
+	'MCP_CANNEDMESSAGES_MANAGE'		=> 'Manage messages',
+
+	'MCP_CANNEDMESSAGE_ADD_LOG'		=> '<strong>Canned Message added</strong><br />» %s',
+	'MCP_CANNEDMESSAGE_EDIT_LOG'		=> '<strong>Canned Message edited</strong><br />» %s',
+	'MCP_CANNEDMESSAGE_DELETE_LOG'	=> '<strong>Canned Message deleted</strong><br />» %s',
+));

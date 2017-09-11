@@ -1,0 +1,16 @@
+.quick {
+    float: right;
+}
+
+.message-list-actions {
+    float: right !important;
+    padding: 2px 4px !important;
+}
+
+.parent-list {
+    margin-bottom: 10px !important;
+}
+
+.parent-list a {
+    font-weight: bold;
+}

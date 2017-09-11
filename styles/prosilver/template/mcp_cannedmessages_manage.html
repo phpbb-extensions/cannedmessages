@@ -1,0 +1,130 @@
+{% include 'mcp_header.html' %}
+{% INCLUDECSS '@phpbb_cannedmessages/cannedmessages.css' %}
+{% INCLUDEJS '@phpbb_cannedmessages/js/cannedmessages_mcp.js' %}
+
+<h2>{{ lang('MCP_CANNEDMESSAGES_TITLE') }}</h2>
+
+<div class="panel">
+	<div class="inner">
+
+		<h3>{{ lang('MCP_CANNEDMESSAGES_MANAGE') }}</h3>
+
+		{% if S_CANNEDMESSAGE_ADD_OR_EDIT %}
+		<p>{{ lang('CANNEDMESSAGES_EXPLAIN_ADD_EDIT') }}</p>
+
+		{% if S_ERROR %}
+		<div class="error">
+			<h3>{{ lang('ERROR') }}</h3>
+			<p>{{ ERROR_MSG }}</p>
+		</div>
+		{% endif %}
+
+		<form id="cannedmessage_add_edit" method="post" action="{{ U_ACTION }}">
+			<fieldset>
+				<dl>
+					<dt><label for="cannedmessage_name">{{ lang('CANNEDMESSAGE_NAME') }}{{ lang('COLON') }}</label></dt>
+					<dd><input name="cannedmessage_name" id="cannedmessage_name" type="text" class="inputbox" maxlength="255" value="{{ CANNESMESSAGE_NAME }}" /></dd>
+				</dl>
+
+				<dl>
+					<dt><label for="cannedmessage_parent">{{ lang('CANNEDMESSAGE_PARENT') }}{{ lang('COLON') }}</label></dt>
+					<dd>
+						<select name="cannedmessage_parent" id="cannedmessage_parent">
+							<option value="0">{{ lang('NO_PARENT') }}</option>
+							{{ S_CANNEDMESSAGE_PARENTS }}
+						</select>
+					</dd>
+				</dl>
+
+				<dl>
+					<dt><label for="is_cat1">{{ lang('CANNEDMESSAGE_IS_CAT') }}{{ lang('COLON') }}</label></dt>
+					<dd>
+						<label for="is_cat1"><input type="radio" name="is_cat" id="is_cat1" value="1" {% if IS_CAT %}checked="checked"{% endif %}/> {{ lang('YES') }}</label>
+						<label for="is_cat0"><input type="radio" name="is_cat" id="is_cat0" value="0" {% if not IS_CAT %}checked="checked"{% endif %}/> {{ lang('NO') }}</label>
+					</dd>
+				</dl>
+
+				<dl id="cannedmessage_content_section"{% if IS_CAT %} style="display: none;"{% endif %}>
+					<dt><label for="cannedmessage_content">{{ lang('CANNEDMESSAGE_CONTENT') }}{{ lang('COLON') }}</label></dt>
+					<dd><textarea name="cannedmessage_content" id="cannedmessage_content" class="inputbox" cols="40" rows="15">{{ CANNEDMESSAGE_CONTENT }}</textarea></dd>
+				</dl>
+			</fieldset>
+
+			<hr />
+
+			<fieldset class="submit-buttons">
+				<input type="submit" name="submit" id="submit" value="{{ lang('SUBMIT') }}" class="button1" />
+				<input type="reset" name="reset" id="reset" value="{{ lang('RESET') }}" class="button2" />
+				{S_FORM_TOKEN}
+			</fieldset>
+		</form>
+
+		{% else %}
+		<p>{{ lang('CANNEDMESSAGES_EXPLAIN_MANAGE') }}</p>
+
+		{% if loops.parents %}
+		<ul class="linklist parent-list">
+			{% for parent in loops.parents %}
+			<li><a href="{{ parent.U_PARENT}}">{{ parent.PARENT_NAME }}</a></li>
+			{% if not parent.S_FIRST_ROW and not parent.S_LAST_ROW %}
+			<li>-></li>
+			{% endif %}
+			{% endfor %}
+		</ul>
+		{% endif %}
+
+		<ul class="topiclist simple">
+			<li class="header">
+				<dl>
+					<dt><div class="list-inner">{{ lang('CANNEDMESSAGE_NAME') }}</div></dt>
+					<dd class="topictitle message-list-actions">{{ lang('ACTIONS') }}</dd>
+				</dl>
+			</li>
+		</ul>
+
+		<ul class="topiclist cplist">
+			{% for cannedmessage in loops.cannedmessages %}
+			<li class="row {% if cannedmessage.S_ROW_COUNT is odd %}bg1{% else %}bg2{% endif %}">
+				<dl>
+					<dt>
+						<div class="list-inner">
+							<b>{% if cannedmessage.U_CANNEDMESSAGE %}<a href="{{ cannedmessage.U_CANNEDMESSAGE }}">{{ cannedmessage.CANNEDMESSAGE_NAME }}</a>{% else %}{{ cannedmessage.CANNEDMESSAGE_NAME }}{% endif %}</b>
+						</div>
+					</dt>
+					<dd class="topictitle message-list-actions">
+						<span class="up-disabled" style="display:none;">{ICON_MOVE_UP_DISABLED}</span>
+						<span class="up"><a href="{cannedmessage.U_MOVE_UP}" data-ajax="row_up">{ICON_MOVE_UP}</a></span>
+						<span class="down-disabled" style="display:none;">{ICON_MOVE_DOWN_DISABLED}</span>
+						<span class="down"><a href="{cannedmessage.U_MOVE_DOWN}" data-ajax="row_down">{ICON_MOVE_DOWN}</a></span>
+						<a href="{cannedmessage.U_EDIT}">{ICON_EDIT}</a>
+						<a href="{cannedmessage.U_DELETE}">{ICON_DELETE}</a>
+					</dd>
+				</dl>
+			</li>
+			{% else %}
+			<li class="row bg1">
+				<dl>
+					<dt>
+						<div class="list-inner">
+							<i>{{ lang('NO_CANNEDMESSAGES') }}</i>
+						</div>
+					</dt>
+				</dl>
+			</li>
+			{% endfor %}
+		</ul>
+
+		<form id="cannedmessages" method="post" action="{{ U_ACTION_ADD }}">
+			<fieldset class="quick">
+				<input type="hidden" name="action" value="add" />
+
+				<input type="text" id="cannedmessage_name" name="cannedmessage_name" value="" maxlength="255" />
+				<input class="button2" id="addmessage" name="addmessage" type="submit" value="{{ lang('CREATE_CANNEDMESSAGE') }}" />
+				{{ S_FORM_TOKEN }}
+			</fieldset>
+		</form>
+		{% endif %}
+	</div>
+</div>
+
+{% include 'mcp_footer.html' %}

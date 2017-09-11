@@ -3,7 +3,7 @@
  *
  * Canned Messages. An extension for the phpBB Forum Software package.
  *
- * @copyright (c) 2017, David Colón, http://www.davidiq.com
+ * @copyright (c) 2017 phpBB Limited <https://www.phpbb.com>
  * @license GNU General Public License, version 2 (GPL-2.0)
  *
  */
@@ -19,12 +19,12 @@ class main_info
 	{
 		return array(
 			'filename'	=> '\phpbb\cannedmessages\mcp\main_module',
-			'title'		=> 'MCP_DEMO_TITLE',
+			'title'		=> 'MCP_CANNEDMESSAGES_TITLE',
 			'modes'		=> array(
-				'front'	=> array(
-					'title'	=> 'MCP_DEMO',
-					'auth'	=> 'ext_phpbb/cannedmessages',
-					'cat'	=> array('MCP_DEMO_TITLE')
+				'manage'	=> array(
+					'title'	=> 'MCP_CANNEDMESSAGES_MANAGE',
+					'auth'	=> 'ext_phpbb/cannedmessages && acl_m_',
+					'cat'	=> array('MCP_CANNEDMESSAGES_TITLE')
 				),
 			),
 		);

@@ -3,7 +3,7 @@
  *
  * Canned Messages. An extension for the phpBB Forum Software package.
  *
- * @copyright (c) 2017, David Colón, http://www.davidiq.com
+ * @copyright (c) 2017 phpBB Limited <https://www.phpbb.com>
  * @license GNU General Public License, version 2 (GPL-2.0)
  *
  */
@@ -15,16 +15,26 @@ namespace phpbb\cannedmessages\mcp;
  */
 class main_module
 {
-	var $u_action;
+	public $page_title;
+	public $tpl_name;
+	public $u_action;
 
 	function main($id, $mode)
 	{
-		global $template, $user;
+		global $phpbb_container;
 
-		$this->tpl_name = 'mcp_demo_body';
-		$this->page_title = $user->lang('MCP_DEMO_TITLE');
-		add_form_key('acme/demo');
+		/** @var \phpbb\cannedmessages\controller\mcp_controller $mcp_controller */
+		$mcp_controller = $phpbb_container->get('phpbb.cannedmessages.mcp.controller');
 
-		$template->assign_var('U_POST_ACTION', $this->u_action);
+		// Make the $u_action url available in the MCP controller
+		$mcp_controller->set_page_url($this->u_action);
+
+		// Load a template for our MCP page
+		$this->tpl_name = 'mcp_cannedmessages_' . $mode;
+
+		// Set the page title for our MCP page
+		$this->page_title = $mcp_controller->get_page_title();
+
+		$mcp_controller->{'mode_' . $mode}();
 	}
 }

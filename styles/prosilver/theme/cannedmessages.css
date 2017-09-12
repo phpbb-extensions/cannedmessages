@@ -22,3 +22,13 @@
 #color_palette_placeholder {
     margin-left: auto;
 }
+
+#format-buttons {
+    margin-top: 0;
+}
+
+#cannedmessage_preview dd {
+    width: 100%;
+    float: left;
+    margin-left: 0;
+}

@@ -10,6 +10,13 @@ services:
 
     phpbb.cannedmessages.listener:
         class: phpbb\cannedmessages\event\main_listener
+        arguments:
+            - '@template'
+            - '@user'
+            - '@auth'
+            - '@phpbb.cannedmessages.message.manager'
+            - '@language'
+            - '@controller.helper'
         tags:
             - { name: event.listener }
 
@@ -25,3 +32,9 @@ services:
             - '%core.root_path%'
             - '%core.adm_relative_path%'
             - '%core.php_ext%'
+
+    phpbb.cannedmessages.selected.controller:
+        class: phpbb\cannedmessages\controller\selected_controller
+        arguments:
+            - '@phpbb.cannedmessages.message.manager'
+            - '@request'

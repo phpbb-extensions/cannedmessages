@@ -27,17 +27,26 @@ class mcp_controller
 	/** @var \phpbb\language\language */
 	protected $language;
 
+	/** @var \phpbb\cannedmessages\message\manager */
+	protected $manager;
+
 	/** @var \phpbb\request\request */
 	protected $request;
 
 	/** @var \phpbb\log\log */
 	protected $log;
 
-	/** @var  string Admin path for images */
-	protected $phpbb_admin_path;
+	/** @var string Admin path for images */
+	protected $phpbb_admin_images_path;
 
 	/** @var array List of errors */
 	protected $errors = array();
+
+	/** @var string The PHP extension in use */
+	protected $php_ext;
+
+	/** @var string The root path for phpBB */
+	protected $root_path;
 
 	/**
 	 * Constructor
@@ -62,7 +71,9 @@ class mcp_controller
 		$this->log = $log;
 		$this->manager = $manager;
 		$this->request = $request;
-		$this->phpbb_admin_path = $adm_relative_path;
+		$this->phpbb_admin_images_path = $adm_relative_path . 'images/';
+		$this->php_ext = $php_ext;
+		$this->root_path = $root_path;
 	}
 
 	/**
@@ -172,14 +183,14 @@ class mcp_controller
 
 		$this->template->assign_vars(array(
 			'U_ACTION_ADD'				=> $this->get_main_u_action($parent_id) . "&amp;action=add",
-			'ICON_MOVE_UP'				=> '<img src="' . htmlspecialchars($this->phpbb_admin_path) . 'images/icon_up.gif" alt="' . $this->language->lang('MOVE_UP') . '" title="' . $this->language->lang('MOVE_UP') . '" />',
-			'ICON_MOVE_UP_DISABLED'		=> '<img src="' . htmlspecialchars($this->phpbb_admin_path) . 'images/icon_up_disabled.gif" alt="' . $this->language->lang('MOVE_UP') . '" title="' . $this->language->lang('MOVE_UP') . '" />',
-			'ICON_MOVE_DOWN'			=> '<img src="' . htmlspecialchars($this->phpbb_admin_path) . 'images/icon_down.gif" alt="' . $this->language->lang('MOVE_DOWN') . '" title="' . $this->language->lang('MOVE_DOWN') . '" />',
-			'ICON_MOVE_DOWN_DISABLED'	=> '<img src="' . htmlspecialchars($this->phpbb_admin_path) . 'images/icon_down_disabled.gif" alt="' . $this->language->lang('MOVE_DOWN') . '" title="' . $this->language->lang('MOVE_DOWN') . '" />',
-			'ICON_EDIT'					=> '<img src="' . htmlspecialchars($this->phpbb_admin_path) . 'images/icon_edit.gif" alt="' . $this->language->lang('EDIT') . '" title="' . $this->language->lang('EDIT') . '" />',
-			'ICON_EDIT_DISABLED'		=> '<img src="' . htmlspecialchars($this->phpbb_admin_path) . 'images/icon_edit_disabled.gif" alt="' . $this->language->lang('EDIT') . '" title="' . $this->language->lang('EDIT') . '" />',
-			'ICON_DELETE'				=> '<img src="' . htmlspecialchars($this->phpbb_admin_path) . 'images/icon_delete.gif" alt="' . $this->language->lang('DELETE') . '" title="' . $this->language->lang('DELETE') . '" />',
-			'ICON_DELETE_DISABLED'		=> '<img src="' . htmlspecialchars($this->phpbb_admin_path) . 'images/icon_delete_disabled.gif" alt="' . $this->language->lang('DELETE') . '" title="' . $this->language->lang('DELETE') . '" />',
+			'ICON_MOVE_UP'				=> '<img src="' . htmlspecialchars($this->phpbb_admin_images_path) . 'icon_up.gif" alt="' . $this->language->lang('MOVE_UP') . '" title="' . $this->language->lang('MOVE_UP') . '" />',
+			'ICON_MOVE_UP_DISABLED'		=> '<img src="' . htmlspecialchars($this->phpbb_admin_images_path) . 'icon_up_disabled.gif" alt="' . $this->language->lang('MOVE_UP') . '" title="' . $this->language->lang('MOVE_UP') . '" />',
+			'ICON_MOVE_DOWN'			=> '<img src="' . htmlspecialchars($this->phpbb_admin_images_path) . 'icon_down.gif" alt="' . $this->language->lang('MOVE_DOWN') . '" title="' . $this->language->lang('MOVE_DOWN') . '" />',
+			'ICON_MOVE_DOWN_DISABLED'	=> '<img src="' . htmlspecialchars($this->phpbb_admin_images_path) . 'icon_down_disabled.gif" alt="' . $this->language->lang('MOVE_DOWN') . '" title="' . $this->language->lang('MOVE_DOWN') . '" />',
+			'ICON_EDIT'					=> '<img src="' . htmlspecialchars($this->phpbb_admin_images_path) . 'icon_edit.gif" alt="' . $this->language->lang('EDIT') . '" title="' . $this->language->lang('EDIT') . '" />',
+			'ICON_EDIT_DISABLED'		=> '<img src="' . htmlspecialchars($this->phpbb_admin_images_path) . 'icon_edit_disabled.gif" alt="' . $this->language->lang('EDIT') . '" title="' . $this->language->lang('EDIT') . '" />',
+			'ICON_DELETE'				=> '<img src="' . htmlspecialchars($this->phpbb_admin_images_path) . 'icon_delete.gif" alt="' . $this->language->lang('DELETE') . '" title="' . $this->language->lang('DELETE') . '" />',
+			'ICON_DELETE_DISABLED'		=> '<img src="' . htmlspecialchars($this->phpbb_admin_images_path) . 'icon_delete_disabled.gif" alt="' . $this->language->lang('DELETE') . '" title="' . $this->language->lang('DELETE') . '" />',
 		));
 	}
 
@@ -346,17 +357,32 @@ class mcp_controller
 			$u_action .= "&amp;action=add";
 		}
 
+		$cannedmessage_content_preview = false;
+
+		if ($this->request->is_set_post('preview') && !empty($cannedmessage_data['cannedmessage_content']))
+		{
+			if (!class_exists('parse_message'))
+			{
+				include("{$this->root_path}includes/message_parser.{$this->php_ext}");
+			}
+
+			$message_parser = new \parse_message($cannedmessage_data['cannedmessage_content']);
+			$cannedmessage_content_preview = $message_parser->format_display(true, true, true, false);
+		}
+
 		$this->template->assign_vars(array(
 			'S_ERROR'   => (bool) count($this->errors),
 			'ERROR_MSG' => count($this->errors) ? implode('<br />', $this->errors) : '',
 
 			'S_CANNEDMESSAGE_ADD_OR_EDIT'	=> true,
 			'U_ACTION'						=> $u_action,
+			'U_ACTION_CANCEL'				=> $this->get_main_u_action($cannedmessage_data['parent_id']),
 			'CANNESMESSAGE_NAME'			=> $cannedmessage_data['cannedmessage_name'],
 			'S_CANNEDMESSAGE_PARENTS'		=> $this->manager->get_messages(false, null, true, $cannedmessage_data['parent_id']),
 			'IS_CAT'						=> $cannedmessage_data['is_cat'],
 			'CANNEDMESSAGE_CONTENT'			=> $cannedmessage_data['cannedmessage_content'],
 			'S_BBCODE_ALLOWED'				=> true,
+			'CANNEDMESSAGE_CONTENT_PREVIEW'	=> $cannedmessage_content_preview,
 		));
 	}
 

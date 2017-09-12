@@ -1,0 +1,11 @@
+{% if S_CANNEDMESSAGES %}
+<select name="cannedmessages" id="cannedmessages">
+    <option value="" selected="selected">{{ lang('CANNEDMESSAGES') }}</option>
+    {{ S_CANNEDMESSAGES }}
+</select>
+
+<script>
+    var u_cannedmessage_selected = '{{ U_CANNEDMESSAGE_SELECTED|e('js') }}';
+</script>
+{% INCLUDEJS '@phpbb_cannedmessages/js/cannedmessages_posting.js' %}
+{% endif %}

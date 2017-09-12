@@ -94,7 +94,7 @@ class manager
 			}
 			else
 			{
-				$cannedmessage_list .= '<option value="' . $row['cannedmessage_id'] . '" ' . (($disabled && !$only_categories) ? 'disabled="disabled" class="disabled-option"' : $selected ? 'selected="selected"' : '') . ' >' . $padding . $row['cannedmessage_name'] . '</option>';
+				$cannedmessage_list .= '<option value="' . $row['cannedmessage_id'] . '" ' . (($disabled && !$only_categories) ? 'disabled="disabled" class="disabled-option"' : ($selected ? 'selected="selected"' : '')) . ' >' . $padding . $row['cannedmessage_name'] . '</option>';
 			}
 		}
 		unset($padding_store, $rowset);

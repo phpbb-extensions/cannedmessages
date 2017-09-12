@@ -51,13 +51,30 @@
 						<textarea name="cannedmessage_content" id="cannedmessage_content" class="inputbox" cols="40" rows="15">{{ CANNEDMESSAGE_CONTENT }}</textarea>
 					</dd>
 				</dl>
+
+				{% if CANNEDMESSAGE_CONTENT_PREVIEW %}
+				<dl id="cannedmessage_preview">
+					<dt><label>{{ lang('PREVIEW') }}{{ lang('COLON') }}</label></dt>
+					<dd>
+						<div class="post bg2">
+							<div class="inner">
+								<div class="postbody">
+									<div class="content">{{ CANNEDMESSAGE_CONTENT_PREVIEW }}</div>
+								</div>
+							</div>
+						</div>
+					</dd>
+				</dl>
+				{% endif %}
 			</fieldset>
 
 			<hr />
 
 			<fieldset class="submit-buttons">
+				<input type="submit" name="preview" id="preview" value="{{ lang('PREVIEW') }}" class="button1"{% if IS_CAT %} style="display: none;"{% endif %} />
 				<input type="submit" name="submit" id="submit" value="{{ lang('SUBMIT') }}" class="button1" />
-				<input type="reset" name="reset" id="reset" value="{{ lang('RESET') }}" class="button2" />
+				<input type="submit" name="cancel" id="cancel" value="{{ lang('CANCEL') }}" class="button2" />
+				<input type="hidden" name="action_cancel" id="action_cancel" value="{{ U_ACTION_CANCEL }}" />
 				{S_FORM_TOKEN}
 			</fieldset>
 		</form>

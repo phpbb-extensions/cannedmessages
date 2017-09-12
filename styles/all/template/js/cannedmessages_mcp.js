@@ -3,6 +3,28 @@ text_name = 'cannedmessage_content';
 
 (function($) { // Avoid conflicts with other libraries
     'use strict';
+    phpbb.addAjaxCallback('row_down', function(res) {
+        if (typeof res.success === 'undefined' || !res.success) {
+            return;
+        }
+
+        var $firstLi = $(this).parents('li'),
+            $secondLi = $firstLi.next();
+
+        $firstLi.insertAfter($secondLi);
+    });
+
+    phpbb.addAjaxCallback('row_up', function(res) {
+        if (typeof res.success === 'undefined' || !res.success) {
+            return;
+        }
+
+        var $secondLi = $(this).parents('li'),
+            $firstLi = $secondLi.prev();
+
+        $secondLi.insertBefore($firstLi);
+    });
+
     $(function() {
 
         $('#is_cat1').on('change', function() {

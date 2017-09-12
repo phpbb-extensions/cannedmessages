@@ -32,3 +32,13 @@
     float: left;
     margin-left: 0;
 }
+
+ul li:first-child dd.message-list-actions .up,
+ul li:last-child dd.message-list-actions .down {
+    display: none;
+}
+
+ul li:first-child dd.message-list-actions .up-disabled,
+ul li:last-child dd.message-list-actions .down-disabled {
+    display: inline !important;
+}

@@ -112,6 +112,10 @@ class mcp_controller
 			$this->language->add_lang('posting');
 			$this->{'action_' . $this->action}($this->request->variable($this->action === 'add' ? 'parent_id' : 'cannedmessage_id', 0));
 		}
+		elseif (in_array($this->action, array('move_up', 'move_down')))
+		{
+			$this->move_message($this->action, $this->request->variable('cannedmessage_id', 0));
+		}
 		else
 		{
 			// Otherwise default to this
@@ -176,8 +180,8 @@ class mcp_controller
 				'U_CANNEDMESSAGE'		=> $cannedmessage_row['is_cat'] ? $this->get_main_u_action($cannedmessage_id) : false,
 				'U_MOVE_UP'				=> $this->get_main_u_action($parent_id) . "&amp;action=move_up&amp;cannedmessage_id={$cannedmessage_id}&amp;hash=" . generate_link_hash('up' . $cannedmessage_id),
 				'U_MOVE_DOWN'			=> $this->get_main_u_action($parent_id) . "&amp;action=move_down&amp;cannedmessage_id={$cannedmessage_id}&amp;hash=" . generate_link_hash('down' . $cannedmessage_id),
-				'U_EDIT'				=> $this->get_main_u_action($parent_id) . "&amp;action=edit&amp;cannedmessage_id={$cannedmessage_id}&amp;hash=" . generate_link_hash('edit' . $cannedmessage_id),
-				'U_DELETE'				=> $this->get_main_u_action($parent_id) . "&amp;action=delete&amp;cannedmessage_id={$cannedmessage_id}&amp;hash=" . generate_link_hash('delete' . $cannedmessage_id),
+				'U_EDIT'				=> $this->get_main_u_action($parent_id) . "&amp;action=edit&amp;cannedmessage_id={$cannedmessage_id}&amp;",
+				'U_DELETE'				=> $this->get_main_u_action($parent_id) . "&amp;action=delete&amp;cannedmessage_id={$cannedmessage_id}&amp;",
 			));
 		}
 
@@ -207,8 +211,7 @@ class mcp_controller
 
 			if ($this->action_save($cannedmessage))
 			{
-				$this->log('ADD', $cannedmessage['cannedmessage_name']);
-				$this->success('CANNEDMESSAGE_CREATED', $cannedmessage['parent_id']);
+				$this->success('CANNEDMESSAGE_CREATED', 'ADD', $cannedmessage);
 			}
 		}
 		else
@@ -236,8 +239,7 @@ class mcp_controller
 
 			if ($this->action_save($cannedmessage))
 			{
-				$this->log('EDIT', $cannedmessage['cannedmessage_name']);
-				$this->success('CANNEDMESSAGE_UPDATED', $cannedmessage['parent_id']);
+				$this->success('CANNEDMESSAGE_UPDATED', 'EDIT', $cannedmessage);
 			}
 		}
 		else
@@ -311,12 +313,46 @@ class mcp_controller
 		if (confirm_box(true))
 		{
 			$this->manager->delete_message($cannedmessage);
-			$this->success('CANNEDMESSAGE_DELETED', $cannedmessage['parent_id']);
+			$this->success($cannedmessage['is_cat'] ? 'CANNEDMESSAGE_CAT_DELETED' : 'CANNEDMESSAGE_DELETED', 'DELETE', $cannedmessage);
 		}
 		else
 		{
 			$title = ($cannedmessage['is_cat'] ? 'CANNEDMESSAGES_DEL_CAT_CONFIRM' : 'CANNEDMESSAGES_DEL_CONFIRM');
 			confirm_box(false, sprintf($this->language->lang($title), $cannedmessage['cannedmessage_name']));
+		}
+	}
+
+	/**
+	 * Move a message up or down
+	 *
+	 * @param $direction string  The direction in which to move the message
+	 * @param $cannedmessage_id int  The message ID that will be moved
+	 */
+	protected function move_message($direction, $cannedmessage_id)
+	{
+		if (!$cannedmessage_id)
+		{
+			trigger_error($this->language->lang('NO_CANNEDMESSAGE') . '<br /><br />' . sprintf($this->language->lang('RETURN_PAGE'), '<a href="' . $this->get_main_u_action(0) . '">', '</a>'));
+		}
+
+		$cannedmessage = $this->manager->get_message($cannedmessage_id);
+
+		if (!$cannedmessage)
+		{
+			trigger_error($this->language->lang('NO_CANNEDMESSAGE') . '<br /><br />' . sprintf($this->language->lang('RETURN_PAGE'), '<a href="' . $this->get_main_u_action(0) . '">', '</a>'));
+		}
+
+		$move_cannedmessage_name = $this->manager->move_message($cannedmessage, $direction);
+
+		if ($move_cannedmessage_name !== false)
+		{
+			$this->log(strtoupper($direction), array($cannedmessage['cannedmessage_name'], $move_cannedmessage_name));
+		}
+
+		if ($this->request->is_ajax())
+		{
+			$json_response = new \phpbb\json_response;
+			$json_response->send(array('success' => ($move_cannedmessage_name !== false)));
 		}
 	}
 
@@ -400,24 +436,31 @@ class mcp_controller
 	/**
 	 * Log action
 	 *
-	 * @param	string	$action				Performed action in uppercase
-	 * @param	string	$cannedmessage_name	Canned message name
+	 * @param	string			$action		Performed action in uppercase
+	 * @param	string|array	$log_info	Info to add to the log can either be a string or an array
 	 * @return	void
 	 */
-	public function log($action, $cannedmessage_name)
+	public function log($action, $log_info)
 	{
-		$this->log->add('mod', $this->user->data['user_id'], $this->user->ip, "MCP_CANNEDMESSAGE_{$action}_LOG", time(), array($cannedmessage_name));
+		if (!is_array($log_info))
+		{
+			$log_info = array($log_info);
+		}
+		$this->log->add('mod', $this->user->data['user_id'], $this->user->ip, "MCP_CANNEDMESSAGE_{$action}_LOG", time(), $log_info);
 	}
 
 	/**
-	 * Handles success for the page
+	 * Creates log for successful action and displays success message.
 	 *
-	 * @param $message string The lang key to use for the success message
-	 * @param $parent_id int  Optional parent ID to know where to return to after saving
+	 * @param $message 		 string The lang key to use for the success message
+	 * @param $log_type 	 string The log type to create
+	 * @param $cannedmessage array 	The canned message data to use for log and redirect
 	 */
-	protected function success($message, $parent_id)
+	protected function success($message, $log_type, $cannedmessage)
 	{
-		$redirect = $this->get_main_u_action($parent_id);
+		$this->log($log_type, $cannedmessage['cannedmessage_name']);
+
+		$redirect = $this->get_main_u_action($cannedmessage['parent_id']);
 		meta_refresh(3, $redirect);
 		trigger_error($this->language->lang($message) . '<br /><br />' . sprintf($this->language->lang('RETURN_PAGE'), '<a href="' . $redirect . '">', '</a>'));
 	}

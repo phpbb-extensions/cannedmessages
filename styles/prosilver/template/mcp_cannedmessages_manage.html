@@ -1,6 +1,6 @@
 {% include 'mcp_header.html' %}
 {% INCLUDECSS '@phpbb_cannedmessages/cannedmessages.css' %}
-{% INCLUDEJS '@phpbb_cannedmessages/js/cannedmessages_mcp.js' %}
+<!-- INCLUDEJS {T_ASSETS_PATH}/javascript/editor.js -->
 
 <h2>{{ lang('MCP_CANNEDMESSAGES_TITLE') }}</h2>
 
@@ -19,7 +19,7 @@
 		</div>
 		{% endif %}
 
-		<form id="cannedmessage_add_edit" method="post" action="{{ U_ACTION }}">
+		<form name="cannedmessage_add_edit" id="cannedmessage_add_edit" method="post" action="{{ U_ACTION }}">
 			<fieldset>
 				<dl>
 					<dt><label for="cannedmessage_name">{{ lang('CANNEDMESSAGE_NAME') }}{{ lang('COLON') }}</label></dt>
@@ -46,7 +46,10 @@
 
 				<dl id="cannedmessage_content_section"{% if IS_CAT %} style="display: none;"{% endif %}>
 					<dt><label for="cannedmessage_content">{{ lang('CANNEDMESSAGE_CONTENT') }}{{ lang('COLON') }}</label></dt>
-					<dd><textarea name="cannedmessage_content" id="cannedmessage_content" class="inputbox" cols="40" rows="15">{{ CANNEDMESSAGE_CONTENT }}</textarea></dd>
+					<dd>
+						{% include 'posting_buttons.html' %}
+						<textarea name="cannedmessage_content" id="cannedmessage_content" class="inputbox" cols="40" rows="15">{{ CANNEDMESSAGE_CONTENT }}</textarea>
+					</dd>
 				</dl>
 			</fieldset>
 
@@ -66,7 +69,7 @@
 		<ul class="linklist parent-list">
 			{% for parent in loops.parents %}
 			<li><a href="{{ parent.U_PARENT}}">{{ parent.PARENT_NAME }}</a></li>
-			{% if not parent.S_FIRST_ROW and not parent.S_LAST_ROW %}
+			{% if not parent.S_LAST_ROW %}
 			<li>-></li>
 			{% endif %}
 			{% endfor %}
@@ -127,4 +130,5 @@
 	</div>
 </div>
 
+{% INCLUDEJS '@phpbb_cannedmessages/js/cannedmessages_mcp.js' %}
 {% include 'mcp_footer.html' %}

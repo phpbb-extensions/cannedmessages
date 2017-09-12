@@ -98,6 +98,7 @@ class mcp_controller
 
 		if (in_array($this->action, array('add', 'edit', 'delete')))
 		{
+			$this->language->add_lang('posting');
 			$this->{'action_' . $this->action}($this->request->variable($this->action === 'add' ? 'parent_id' : 'cannedmessage_id', 0));
 		}
 		else
@@ -136,14 +137,22 @@ class mcp_controller
 				}
 			}
 
-			$parents = array_reverse($parents);
-
-			for ($i = 0; count($parents) > $i; $i++)
+			if (count($parents))
 			{
-				$this->template->assign_block_vars('parents', array(
-					'PARENT_NAME'	=> $parents[$i]['name'],
-					'U_PARENT'		=> $this->u_action . ($i > 0 ? "&amp;parent_id={$parents[$i]['id']}" : ''),
-				));
+				// Add a 'main' placeholder
+				$parents[] = [
+					'name'	=> $this->language->lang('CANNEDMESSAGE_LIST'),
+					'id'	=> 0,
+				];
+				$parents = array_reverse($parents);
+
+				for ($i = 0; count($parents) > $i; $i++)
+				{
+					$this->template->assign_block_vars('parents', array(
+						'PARENT_NAME'	=> $parents[$i]['name'],
+						'U_PARENT'		=> $this->get_main_u_action($i > 0 ? $parents[$i]['id'] : 0),
+					));
+				}
 			}
 			unset($parents);
 		}
@@ -153,16 +162,16 @@ class mcp_controller
 			$this->template->assign_block_vars('cannedmessages', array(
 				'CANNEDMESSAGE_ID'		=> $cannedmessage_id,
 				'CANNEDMESSAGE_NAME'	=> $cannedmessage_row['cannedmessage_name'],
-				'U_CANNEDMESSAGE'		=> $cannedmessage_row['is_cat'] ? "{$this->u_action}&amp;parent_id={$cannedmessage_id}" : false,
-				'U_MOVE_UP'				=> "{$this->u_action}&amp;action=move_up&amp;cannedmessage_id={$cannedmessage_id}&amp;hash=" . generate_link_hash('up' . $cannedmessage_id),
-				'U_MOVE_DOWN'			=> "{$this->u_action}&amp;action=move_down&amp;cannedmessage_id={$cannedmessage_id}&amp;hash=" . generate_link_hash('down' . $cannedmessage_id),
-				'U_EDIT'				=> "{$this->u_action}&amp;action=edit&amp;cannedmessage_id={$cannedmessage_id}&amp;hash=" . generate_link_hash('edit' . $cannedmessage_id),
-				'U_DELETE'				=> "{$this->u_action}&amp;action=delete&amp;cannedmessage_id={$cannedmessage_id}&amp;hash=" . generate_link_hash('delete' . $cannedmessage_id),
+				'U_CANNEDMESSAGE'		=> $cannedmessage_row['is_cat'] ? $this->get_main_u_action($cannedmessage_id) : false,
+				'U_MOVE_UP'				=> $this->get_main_u_action($parent_id) . "&amp;action=move_up&amp;cannedmessage_id={$cannedmessage_id}&amp;hash=" . generate_link_hash('up' . $cannedmessage_id),
+				'U_MOVE_DOWN'			=> $this->get_main_u_action($parent_id) . "&amp;action=move_down&amp;cannedmessage_id={$cannedmessage_id}&amp;hash=" . generate_link_hash('down' . $cannedmessage_id),
+				'U_EDIT'				=> $this->get_main_u_action($parent_id) . "&amp;action=edit&amp;cannedmessage_id={$cannedmessage_id}&amp;hash=" . generate_link_hash('edit' . $cannedmessage_id),
+				'U_DELETE'				=> $this->get_main_u_action($parent_id) . "&amp;action=delete&amp;cannedmessage_id={$cannedmessage_id}&amp;hash=" . generate_link_hash('delete' . $cannedmessage_id),
 			));
 		}
 
 		$this->template->assign_vars(array(
-			'U_ACTION_ADD'				=> "{$this->u_action}&amp;action=add" . ($parent_id > 0 ? "&amp;parent_id={$parent_id}" : ''),
+			'U_ACTION_ADD'				=> $this->get_main_u_action($parent_id) . "&amp;action=add",
 			'ICON_MOVE_UP'				=> '<img src="' . htmlspecialchars($this->phpbb_admin_path) . 'images/icon_up.gif" alt="' . $this->language->lang('MOVE_UP') . '" title="' . $this->language->lang('MOVE_UP') . '" />',
 			'ICON_MOVE_UP_DISABLED'		=> '<img src="' . htmlspecialchars($this->phpbb_admin_path) . 'images/icon_up_disabled.gif" alt="' . $this->language->lang('MOVE_UP') . '" title="' . $this->language->lang('MOVE_UP') . '" />',
 			'ICON_MOVE_DOWN'			=> '<img src="' . htmlspecialchars($this->phpbb_admin_path) . 'images/icon_down.gif" alt="' . $this->language->lang('MOVE_DOWN') . '" title="' . $this->language->lang('MOVE_DOWN') . '" />',
@@ -188,7 +197,7 @@ class mcp_controller
 			if ($this->action_save($cannedmessage))
 			{
 				$this->log('ADD', $cannedmessage['cannedmessage_name']);
-				$this->success('CANNEDMESSAGE_CREATED');
+				$this->success('CANNEDMESSAGE_CREATED', $cannedmessage['parent_id']);
 			}
 		}
 		else
@@ -217,7 +226,7 @@ class mcp_controller
 			if ($this->action_save($cannedmessage))
 			{
 				$this->log('EDIT', $cannedmessage['cannedmessage_name']);
-				$this->success('CANNEDMESSAGE_UPDATED');
+				$this->success('CANNEDMESSAGE_UPDATED', $cannedmessage['parent_id']);
 			}
 		}
 		else
@@ -259,13 +268,45 @@ class mcp_controller
 
 		$result = $this->manager->save_message($cannedmessage_data);
 
-		if (!$result['success'])
+		if ($result !== true)
 		{
-			$this->errors[] = $result['errors'];
+			$this->errors[] = $this->language->lang($result);
 			return false;
 		}
 
 		return true;
+	}
+
+	/**
+	 * Delete a canned message
+	 *
+	 * @param $cannedmessage_id int The canned message ID to delete
+	 */
+	protected function action_delete($cannedmessage_id)
+	{
+		$cannedmessage = $this->manager->get_message($cannedmessage_id);
+
+		if ($cannedmessage['is_cat'])
+		{
+			// Check to see if there are any children
+			$cannedmessage_children = $this->manager->get_messages(true, $cannedmessage_id);
+
+			if (count($cannedmessage_children))
+			{
+				trigger_error($this->language->lang('CANNEDMESSAGE_HAS_CHILDREN_DEL') . '<br /><br />' . sprintf($this->language->lang('RETURN_PAGE'), '<a href="' . $this->get_main_u_action($cannedmessage['parent_id']) . '">', '</a>'));
+			}
+		}
+
+		if (confirm_box(true))
+		{
+			$this->manager->delete_message($cannedmessage);
+			$this->success('CANNEDMESSAGE_DELETED', $cannedmessage['parent_id']);
+		}
+		else
+		{
+			$title = ($cannedmessage['is_cat'] ? 'CANNEDMESSAGES_DEL_CAT_CONFIRM' : 'CANNEDMESSAGES_DEL_CONFIRM');
+			confirm_box(false, sprintf($this->language->lang($title), $cannedmessage['cannedmessage_name']));
+		}
 	}
 
 	/**
@@ -294,13 +335,15 @@ class mcp_controller
 	{
 		add_form_key('phpbb_cannedmessages');
 
+		$u_action = $this->get_main_u_action($cannedmessage_data['parent_id']);
+
 		if ($this->action === 'edit')
 		{
-			$u_action = "{$this->u_action}&amp;action=edit&amp;cannedmessage_id={$cannedmessage_data['cannedmessage_id']}&amp;hash=" . generate_link_hash('edit' . $cannedmessage_data['cannedmessage_id']);
+			$u_action .= "&amp;action=edit&amp;cannedmessage_id={$cannedmessage_data['cannedmessage_id']}&amp;hash=" . generate_link_hash('edit' . $cannedmessage_data['cannedmessage_id']);
 		}
 		else
 		{
-			$u_action = "{$this->u_action}&amp;action=add" . ($cannedmessage_data['parent_id'] > 0 ? "&amp;parent_id={$cannedmessage_data['parent_id']}" : '');
+			$u_action .= "&amp;action=add";
 		}
 
 		$this->template->assign_vars(array(
@@ -313,7 +356,19 @@ class mcp_controller
 			'S_CANNEDMESSAGE_PARENTS'		=> $this->manager->get_messages(false, null, true, $cannedmessage_data['parent_id']),
 			'IS_CAT'						=> $cannedmessage_data['is_cat'],
 			'CANNEDMESSAGE_CONTENT'			=> $cannedmessage_data['cannedmessage_content'],
+			'S_BBCODE_ALLOWED'				=> true,
 		));
+	}
+
+	/**
+	 * Gets the main u_action value
+	 *
+	 * @param $parent_id int The parent ID to append to the u_action, if needed
+	 * @return string The proper u_action
+	 */
+	protected function get_main_u_action($parent_id)
+	{
+		return $this->u_action . ($parent_id > 0 ? "&amp;parent_id={$parent_id}" : '');
 	}
 
 	/**
@@ -332,10 +387,11 @@ class mcp_controller
 	 * Handles success for the page
 	 *
 	 * @param $message string The lang key to use for the success message
+	 * @param $parent_id int  Optional parent ID to know where to return to after saving
 	 */
-	protected function success($message)
+	protected function success($message, $parent_id)
 	{
-		$redirect = $this->u_action;
+		$redirect = $this->get_main_u_action($parent_id);
 		meta_refresh(3, $redirect);
 		trigger_error($this->language->lang($message) . '<br /><br />' . sprintf($this->language->lang('RETURN_PAGE'), '<a href="' . $redirect . '">', '</a>'));
 	}

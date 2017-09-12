@@ -58,7 +58,7 @@ class manager
 			$sql_array['WHERE'][] = 'is_cat = 1';
 		}
 
-		$result = $this->db->sql_query($this->db->sql_build_query('SELECT', $sql_array), $parent_id === null ? 600 : 0);
+		$result = $this->db->sql_query($this->db->sql_build_query('SELECT', $sql_array), !$only_categories && $parent_id === null ? 600 : 0);
 		$rowset = array();
 		while ($row = $this->db->sql_fetchrow($result))
 		{
@@ -85,7 +85,7 @@ class manager
 
 			$right = $row['right_id'];
 			$disabled = $row['is_cat'];
-			$selected = $selected_id === (int)$row['cannedmessage_id'];
+			$selected = (int)$selected_id === (int)$row['cannedmessage_id'];
 
 			if ($return_array)
 			{
@@ -94,7 +94,7 @@ class manager
 			}
 			else
 			{
-				$cannedmessage_list .= '<option value="' . $row['cannedmessage_id'] . '"' . (($disabled && !$only_categories) ? ' disabled="disabled" class="disabled-option"' : $selected ? ' selected="selected"' : '') . '>' . $padding . $row['cannedmessage_name'] . '</option>';
+				$cannedmessage_list .= '<option value="' . $row['cannedmessage_id'] . '" ' . (($disabled && !$only_categories) ? 'disabled="disabled" class="disabled-option"' : $selected ? 'selected="selected"' : '') . ' >' . $padding . $row['cannedmessage_name'] . '</option>';
 			}
 		}
 		unset($padding_store, $rowset);
@@ -125,15 +125,11 @@ class manager
 	 * Saves canned message data
 	 *
 	 * @param $cannedmessage_data array    Contains the data to save
-	 * @return array Results data
+	 * @return boolean|string Save result or key of error message
 	 */
 	public function save_message($cannedmessage_data)
 	{
-		$return_result = [
-			'success'	=> true,
-			'errors'	=> array(),
-		];
-
+		// Categories don't have message content
 		if ($cannedmessage_data['is_cat'])
 		{
 			$cannedmessage_data['cannedmessage_content'] = '';
@@ -141,23 +137,187 @@ class manager
 
 		if ($cannedmessage_data['cannedmessage_id'] > 0)
 		{
-			// Update data check
+			// Get the original canned message data
 			$cannedmessage_old = $this->get_message($cannedmessage_data['cannedmessage_id']);
-			if ($cannedmessage_old['is_cat'] != $cannedmessage_data['is_cat']
-				&& $cannedmessage_old['parent_id'] == $cannedmessage_data['parent_id'])
-			{
 
+			if (!$cannedmessage_data['is_cat'] && $cannedmessage_old['is_cat'] != $cannedmessage_data['is_cat'])
+			{
+				// Check to see if there are any children and fail out
+				if (count($this->get_messages(true, $cannedmessage_data['cannedmessage_id'])))
+				{
+					// Review this later to see if we can show a "new parent category" field instead of showing an error
+					return 'CANNEDMESSAGE_HAS_CHILDREN';
+				}
 			}
 
-			$sql = 'UPDATE';
+			// Check to see if we need to move things around
+			if ($cannedmessage_data['parent_id'] != $cannedmessage_old['parent_id'])
+			{
+				$sql = 'SELECT cm2.*
+						FROM ' . $this->cannedmessages_table . ' cm1
+						LEFT JOIN ' . $this->cannedmessages_table . " cm2 ON (cm2.left_id BETWEEN cm1.left_id AND cm1.right_id)
+						WHERE cm1.cannedmessage_id = {$cannedmessage_old['cannedmessage_id']}
+						ORDER BY cm2.left_id ASC";
+				$result = $this->db->sql_query($sql);
+
+				$moved_cannedmessages = array();
+				while ($row = $this->db->sql_fetchrow($result))
+				{
+					$moved_cannedmessages[] = $row;
+				}
+				$this->db->sql_freeresult($result);
+
+				$from_data = $moved_cannedmessages[0];
+				$diff = count($moved_cannedmessages) * 2;
+
+				$moved_ids = array();
+				for ($i = 0, $size = count($moved_cannedmessages); $i < $size; ++$i)
+				{
+					$moved_ids[] = $moved_cannedmessages[$i]['cannedmessage_id'];
+				}
+
+				$this->resync_tree($from_data, $diff);
+
+				if ($cannedmessage_data['parent_id'] > 0)
+				{
+					// Retrieve $to_data again, it may have been changed...
+					$to_data = $this->get_message($cannedmessage_data['parent_id']);
+
+					// Re-sync new parents
+					$sql = 'UPDATE ' . $this->cannedmessages_table . "
+							SET right_id = right_id + $diff
+							WHERE " . $to_data['right_id'] . ' BETWEEN left_id AND right_id
+							AND ' . $this->db->sql_in_set('cannedmessage_id', $moved_ids, true);
+					$this->db->sql_query($sql);
+
+					// Re-sync the right-hand side of the tree
+					$sql = 'UPDATE ' . $this->cannedmessages_table . "
+							SET left_id = left_id + $diff, right_id = right_id + $diff
+							WHERE left_id > " . $to_data['right_id'] . '
+							AND ' . $this->db->sql_in_set('cannedmessage_id', $moved_ids, true);
+					$this->db->sql_query($sql);
+
+					// Re-sync moved branch
+					$to_data['right_id'] += $diff;
+
+					if ($to_data['right_id'] > $from_data['right_id'])
+					{
+						$diff = '+ ' . ($to_data['right_id'] - $from_data['right_id'] - 1);
+					}
+					else
+					{
+						$diff = '- ' . abs($to_data['right_id'] - $from_data['right_id'] - 1);
+					}
+				}
+				else
+				{
+					$sql = 'SELECT MAX(right_id) AS right_id
+							FROM ' . $this->cannedmessages_table . '
+							WHERE ' . $this->db->sql_in_set('cannedmessage_id', $moved_ids, true);
+					$result = $this->db->sql_query($sql);
+					$max_right_id = $this->db->sql_fetchfield('right_id');
+					$this->db->sql_freeresult($result);
+
+					$diff = '+ ' . ($max_right_id - $from_data['left_id'] + 1);
+				}
+
+				$sql = 'UPDATE ' . $this->cannedmessages_table . "
+						SET left_id = left_id $diff, right_id = right_id $diff
+						WHERE " . $this->db->sql_in_set('cannedmessage_id', $moved_ids);
+				$this->db->sql_query($sql);
+			}
+
+			$sql = 'UPDATE ' . $this->cannedmessages_table . '
+				SET ' . $this->db->sql_build_array('UPDATE', $cannedmessage_data) . '
+				WHERE cannedmessage_id = ' . $cannedmessage_data['cannedmessage_id'];
+			$this->db->sql_query($sql);
 		}
 		else
 		{
-			// Insert data check
+			if ($cannedmessage_data['parent_id'])
+			{
+				// Get the selected parent's information
+				$sql = 'SELECT left_id, right_id, is_cat
+					FROM ' . $this->cannedmessages_table . '
+					WHERE cannedmessage_id = ' . (int)$cannedmessage_data['parent_id'];
+				$result = $this->db->sql_query_limit($sql, 1);
+				$row = $this->db->sql_fetchrow($result);
+				$this->db->sql_freeresult($result);
 
-			$sql = 'INSERT';
+				if (!$row)
+				{
+					return 'CANNEDMESSAGE_PARENT_NOT_EXIST';
+				}
+
+				if (!$row['is_cat'])
+				{
+					return 'CANNEDMESSAGE_PARENT_IS_NOT_CAT';
+				}
+
+				// Update left and right IDs to make space
+				$sql = 'UPDATE ' . $this->cannedmessages_table . '
+					SET left_id = left_id + 2, right_id = right_id + 2
+					WHERE left_id > ' . $row['right_id'];
+				$this->db->sql_query($sql);
+
+				$sql = 'UPDATE ' . $this->cannedmessages_table . '
+					SET right_id = right_id + 2
+					WHERE ' . $row['left_id'] . ' BETWEEN left_id AND right_id';
+				$this->db->sql_query($sql);
+
+				$cannedmessage_data['left_id'] = $row['right_id'];
+				$cannedmessage_data['right_id'] = $row['right_id'] + 1;
+			}
+			else
+			{
+				// No parent so let's get the next maximum ID
+				$sql = 'SELECT MAX(right_id) AS right_id
+					FROM ' . $this->cannedmessages_table;
+				$result = $this->db->sql_query($sql);
+				$max_right_id = $this->db->sql_fetchfield('right_id');
+				$this->db->sql_freeresult($result);
+
+				$cannedmessage_data['left_id'] = $max_right_id + 1;
+				$cannedmessage_data['right_id'] = $max_right_id + 2;
+			}
+
+			$sql = 'INSERT INTO ' . $this->cannedmessages_table . ' ' . $this->db->sql_build_array('INSERT', $cannedmessage_data);
+			$this->db->sql_query($sql);
 		}
 
-		return $return_result;
+		return true;
+	}
+
+	/**
+	 * Deletes a canned message
+	 *
+	 * @param $cannedmessage array The canned message data to delete
+	 */
+	public function delete_message($cannedmessage)
+	{
+		$sql = 'DELETE FROM ' . $this->cannedmessages_table . '
+				WHERE cannedmessage_id = ' . (int)$cannedmessage['cannedmessage_id'];
+		$this->db->sql_query($sql);
+
+		$this->resync_tree($cannedmessage, 2);
+	}
+
+	/**
+	 * Re-syncs left/right ID tree
+	 *
+	 * @param $cannedmessage array The canned message data to use
+	 * @param $diff int	The difference to take from the right and left IDs
+	 */
+	public function resync_tree($cannedmessage, $diff)
+	{
+		$sql = 'UPDATE ' . $this->cannedmessages_table . "
+			SET right_id = right_id - $diff
+			WHERE left_id < {$cannedmessage['right_id']} AND right_id > {$cannedmessage['right_id']}";
+		$this->db->sql_query($sql);
+
+		$sql = 'UPDATE ' . $this->cannedmessages_table . "
+			SET left_id = left_id - $diff, right_id = right_id - $diff
+			WHERE left_id > {$cannedmessage['right_id']}";
+		$this->db->sql_query($sql);
 	}
 }

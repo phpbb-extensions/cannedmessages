@@ -1,3 +1,6 @@
+form_name = 'cannedmessage_add_edit';
+text_name = 'cannedmessage_content';
+
 (function($) { // Avoid conflicts with other libraries
     'use strict';
     $(function() {

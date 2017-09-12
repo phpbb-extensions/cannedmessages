@@ -14,3 +14,11 @@
 .parent-list a {
     font-weight: bold;
 }
+
+#colour_palette dt {
+    display: none;
+}
+
+#color_palette_placeholder {
+    margin-left: auto;
+}

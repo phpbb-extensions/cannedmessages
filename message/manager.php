@@ -50,7 +50,7 @@ class manager
 
 		if ($parent_id !== null)
 		{
-			$sql_array['WHERE'][] = 'parent_id = ' . (int)$parent_id;
+			$sql_array['WHERE'][] = 'parent_id = ' . (int) $parent_id;
 		}
 
 		if ($only_categories)
@@ -85,7 +85,7 @@ class manager
 
 			$right = $row['right_id'];
 			$disabled = $row['is_cat'];
-			$selected = (int)$selected_id === (int)$row['cannedmessage_id'];
+			$selected = (int) $selected_id === (int) $row['cannedmessage_id'];
 
 			if ($return_array)
 			{
@@ -111,8 +111,8 @@ class manager
 	public function get_message($message_id)
 	{
 		$sql = 'SELECT cannedmessage_id, parent_id, left_id, right_id, is_cat, cannedmessage_name, cannedmessage_content
-				FROM ' . $this->cannedmessages_table . '
-				WHERE cannedmessage_id = ' . (int)$message_id;
+			FROM ' . $this->cannedmessages_table . '
+			WHERE cannedmessage_id = ' . (int) $message_id;
 
 		$result = $this->db->sql_query_limit($sql, 1);
 		$row = $this->db->sql_fetchrow($result);
@@ -154,10 +154,10 @@ class manager
 			if ($cannedmessage_data['parent_id'] != $cannedmessage_old['parent_id'])
 			{
 				$sql = 'SELECT cm2.*
-						FROM ' . $this->cannedmessages_table . ' cm1
-						LEFT JOIN ' . $this->cannedmessages_table . " cm2 ON (cm2.left_id BETWEEN cm1.left_id AND cm1.right_id)
-						WHERE cm1.cannedmessage_id = {$cannedmessage_old['cannedmessage_id']}
-						ORDER BY cm2.left_id ASC";
+					FROM ' . $this->cannedmessages_table . ' cm1
+					LEFT JOIN ' . $this->cannedmessages_table . " cm2 ON (cm2.left_id BETWEEN cm1.left_id AND cm1.right_id)
+					WHERE cm1.cannedmessage_id = {$cannedmessage_old['cannedmessage_id']}
+					ORDER BY cm2.left_id ASC";
 				$result = $this->db->sql_query($sql);
 
 				$moved_cannedmessages = array();
@@ -185,16 +185,16 @@ class manager
 
 					// Re-sync new parents
 					$sql = 'UPDATE ' . $this->cannedmessages_table . "
-							SET right_id = right_id + $diff
-							WHERE " . $to_data['right_id'] . ' BETWEEN left_id AND right_id
-							AND ' . $this->db->sql_in_set('cannedmessage_id', $moved_ids, true);
+						SET right_id = right_id + $diff
+						WHERE " . $to_data['right_id'] . ' BETWEEN left_id AND right_id
+						AND ' . $this->db->sql_in_set('cannedmessage_id', $moved_ids, true);
 					$this->db->sql_query($sql);
 
 					// Re-sync the right-hand side of the tree
 					$sql = 'UPDATE ' . $this->cannedmessages_table . "
-							SET left_id = left_id + $diff, right_id = right_id + $diff
-							WHERE left_id > " . $to_data['right_id'] . '
-							AND ' . $this->db->sql_in_set('cannedmessage_id', $moved_ids, true);
+						SET left_id = left_id + $diff, right_id = right_id + $diff
+						WHERE left_id > " . $to_data['right_id'] . '
+						AND ' . $this->db->sql_in_set('cannedmessage_id', $moved_ids, true);
 					$this->db->sql_query($sql);
 
 					// Re-sync moved branch
@@ -212,8 +212,8 @@ class manager
 				else
 				{
 					$sql = 'SELECT MAX(right_id) AS right_id
-							FROM ' . $this->cannedmessages_table . '
-							WHERE ' . $this->db->sql_in_set('cannedmessage_id', $moved_ids, true);
+						FROM ' . $this->cannedmessages_table . '
+						WHERE ' . $this->db->sql_in_set('cannedmessage_id', $moved_ids, true);
 					$result = $this->db->sql_query($sql);
 					$max_right_id = $this->db->sql_fetchfield('right_id');
 					$this->db->sql_freeresult($result);
@@ -222,8 +222,8 @@ class manager
 				}
 
 				$sql = 'UPDATE ' . $this->cannedmessages_table . "
-						SET left_id = left_id $diff, right_id = right_id $diff
-						WHERE " . $this->db->sql_in_set('cannedmessage_id', $moved_ids);
+					SET left_id = left_id $diff, right_id = right_id $diff
+					WHERE " . $this->db->sql_in_set('cannedmessage_id', $moved_ids);
 				$this->db->sql_query($sql);
 			}
 
@@ -239,7 +239,7 @@ class manager
 				// Get the selected parent's information
 				$sql = 'SELECT left_id, right_id, is_cat
 					FROM ' . $this->cannedmessages_table . '
-					WHERE cannedmessage_id = ' . (int)$cannedmessage_data['parent_id'];
+					WHERE cannedmessage_id = ' . (int) $cannedmessage_data['parent_id'];
 				$result = $this->db->sql_query_limit($sql, 1);
 				$row = $this->db->sql_fetchrow($result);
 				$this->db->sql_freeresult($result);
@@ -296,7 +296,7 @@ class manager
 	public function delete_message($cannedmessage)
 	{
 		$sql = 'DELETE FROM ' . $this->cannedmessages_table . '
-				WHERE cannedmessage_id = ' . (int)$cannedmessage['cannedmessage_id'];
+			WHERE cannedmessage_id = ' . (int) $cannedmessage['cannedmessage_id'];
 		$this->db->sql_query($sql);
 
 		$this->resync_tree($cannedmessage, 2);

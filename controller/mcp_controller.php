@@ -51,15 +51,15 @@ class mcp_controller
 	/**
 	 * Constructor
 	 *
-	 * @param \phpbb\user						 $user		   User object
-	 * @param \phpbb\template\template           $template     Template object
-	 * @param \phpbb\language\language           $language     Language object
-	 * @param \phpbb\request\request             $request      Request object
- 	 * @param \phpbb\log\log					 $log		   The phpBB log system
-	 * @param \phpbb\cannedmessages\message\manager      $manager      Canned Messages manager object
-	 * @param string                             $root_path    phpBB root path
-	 * @param string							 $adm_relative_path  Admin relative path
-	 * @param string                             $php_ext      PHP extension
+	 * @param \phpbb\user                           $user              User object
+	 * @param \phpbb\template\template              $template          Template object
+	 * @param \phpbb\language\language              $language          Language object
+	 * @param \phpbb\request\request                $request           Request object
+	 * @param \phpbb\log\log                        $log               The phpBB log system
+	 * @param \phpbb\cannedmessages\message\manager $manager           Canned Messages manager object
+	 * @param string                                $root_path         phpBB root path
+	 * @param string                                $adm_relative_path Admin relative path
+	 * @param string                                $php_ext           PHP extension
 	 */
 	public function __construct(\phpbb\user $user, \phpbb\template\template $template, \phpbb\language\language $language, \phpbb\log\log $log, \phpbb\request\request $request, \phpbb\cannedmessages\message\manager $manager, $root_path, $adm_relative_path, $php_ext)
 	{
@@ -112,7 +112,7 @@ class mcp_controller
 			$this->language->add_lang('posting');
 			$this->{'action_' . $this->action}($this->request->variable($this->action === 'add' ? 'parent_id' : 'cannedmessage_id', 0));
 		}
-		elseif (in_array($this->action, array('move_up', 'move_down')))
+		else if (in_array($this->action, array('move_up', 'move_down')))
 		{
 			$this->move_message($this->action, $this->request->variable('cannedmessage_id', 0));
 		}

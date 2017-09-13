@@ -58,7 +58,8 @@ class manager
 			$sql_array['WHERE'][] = 'is_cat = 1';
 		}
 
-		$result = $this->db->sql_query($this->db->sql_build_query('SELECT', $sql_array), !$only_categories && $parent_id === null ? 600 : 0);
+		$sql = $this->db->sql_build_query('SELECT', $sql_array);
+		$result = $this->db->sql_query($sql, !$only_categories && $parent_id === null ? 600 : 0);
 		$rowset = array();
 		while ($row = $this->db->sql_fetchrow($result))
 		{
@@ -69,7 +70,7 @@ class manager
 		$right = 0;
 		$padding_store = array('0' => '');
 		$padding = '';
-		$cannedmessage_list = ($return_array) ? array() : '';
+		$cannedmessage_list = $return_array ? array() : '';
 
 		foreach ($rowset as $row)
 		{
@@ -80,7 +81,7 @@ class manager
 			}
 			else if ($row['left_id'] > $right + 1)
 			{
-				$padding = (isset($padding_store[$row['parent_id']])) ? $padding_store[$row['parent_id']] : '';
+				$padding = isset($padding_store[$row['parent_id']]) ? $padding_store[$row['parent_id']] : '';
 			}
 
 			$right = $row['right_id'];
@@ -140,14 +141,13 @@ class manager
 			// Get the original canned message data
 			$cannedmessage_old = $this->get_message($cannedmessage_data['cannedmessage_id']);
 
-			if (!$cannedmessage_data['is_cat'] && $cannedmessage_old['is_cat'] != $cannedmessage_data['is_cat'])
+			if (!$cannedmessage_data['is_cat'] &&
+				$cannedmessage_old['is_cat'] != $cannedmessage_data['is_cat'] &&
+				count($this->get_messages(true, $cannedmessage_data['cannedmessage_id'])))
 			{
 				// Check to see if there are any children and fail out
-				if (count($this->get_messages(true, $cannedmessage_data['cannedmessage_id'])))
-				{
-					// Review this later to see if we can show a "new parent category" field instead of showing an error
-					return 'CANNEDMESSAGE_HAS_CHILDREN';
-				}
+				// Review this later to see if we can show a "new parent category" field instead of showing an error
+				return 'CANNEDMESSAGE_HAS_CHILDREN';
 			}
 
 			// Check to see if we need to move things around
@@ -171,9 +171,9 @@ class manager
 				$diff = count($moved_cannedmessages) * 2;
 
 				$moved_ids = array();
-				for ($i = 0, $size = count($moved_cannedmessages); $i < $size; ++$i)
+				foreach ($moved_cannedmessages as $moved_cannedmessage)
 				{
-					$moved_ids[] = $moved_cannedmessages[$i]['cannedmessage_id'];
+					$moved_ids[] = $moved_cannedmessage['cannedmessage_id'];
 				}
 
 				$this->resync_tree($from_data, $diff);
@@ -314,18 +314,18 @@ class manager
 		$sql = 'SELECT cannedmessage_id, cannedmessage_name, left_id, right_id
 			FROM ' . $this->cannedmessages_table . "
 			WHERE parent_id = {$cannedmessage['parent_id']}
-				AND " . (($direction == 'move_up') ? "right_id < {$cannedmessage['right_id']} ORDER BY right_id DESC" : "left_id > {$cannedmessage['left_id']} ORDER BY left_id ASC");
+				AND " . (($direction === 'move_up') ? "right_id < {$cannedmessage['right_id']} ORDER BY right_id DESC" : "left_id > {$cannedmessage['left_id']} ORDER BY left_id ASC");
 		$result = $this->db->sql_query_limit($sql, 1);
 		$target = $this->db->sql_fetchrow($result);
 		$this->db->sql_freeresult($result);
 
-		if (!sizeof($target))
+		if (!count($target))
 		{
 			// The canned message is already on top or bottom
 			return false;
 		}
 
-		if ($direction == 'move_up')
+		if ($direction === 'move_up')
 		{
 			$left_id = $target['left_id'];
 			$right_id = $cannedmessage['right_id'];

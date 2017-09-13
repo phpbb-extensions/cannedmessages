@@ -131,7 +131,7 @@ class mcp_controller
 		$parent_id = $this->request->variable('parent_id', 0);
 
 		// Get the parent name(s)
-		if ($this->request->is_set('parent_id'))
+		if ($parent_id)
 		{
 			$parents = array();
 			$parent_id_tracked = $parent_id;
@@ -161,11 +161,11 @@ class mcp_controller
 				];
 				$parents = array_reverse($parents);
 
-				for ($i = 0; count($parents) > $i; $i++)
+				foreach ($parents as $parent)
 				{
 					$this->template->assign_block_vars('parents', array(
-						'PARENT_NAME'	=> $parents[$i]['name'],
-						'U_PARENT'		=> $this->get_main_u_action($i > 0 ? $parents[$i]['id'] : 0),
+						'PARENT_NAME'	=> $parent['name'],
+						'U_PARENT'		=> $this->get_main_u_action($parent['id']),
 					));
 				}
 			}
@@ -186,7 +186,7 @@ class mcp_controller
 		}
 
 		$this->template->assign_vars(array(
-			'U_ACTION_ADD'				=> $this->get_main_u_action($parent_id) . "&amp;action=add",
+			'U_ACTION_ADD'				=> $this->get_main_u_action($parent_id) . '&amp;action=add',
 			'ICON_MOVE_UP'				=> '<img src="' . htmlspecialchars($this->phpbb_admin_images_path) . 'icon_up.gif" alt="' . $this->language->lang('MOVE_UP') . '" title="' . $this->language->lang('MOVE_UP') . '" />',
 			'ICON_MOVE_UP_DISABLED'		=> '<img src="' . htmlspecialchars($this->phpbb_admin_images_path) . 'icon_up_disabled.gif" alt="' . $this->language->lang('MOVE_UP') . '" title="' . $this->language->lang('MOVE_UP') . '" />',
 			'ICON_MOVE_DOWN'			=> '<img src="' . htmlspecialchars($this->phpbb_admin_images_path) . 'icon_down.gif" alt="' . $this->language->lang('MOVE_DOWN') . '" title="' . $this->language->lang('MOVE_DOWN') . '" />',
@@ -352,7 +352,7 @@ class mcp_controller
 		if ($this->request->is_ajax())
 		{
 			$json_response = new \phpbb\json_response;
-			$json_response->send(array('success' => ($move_cannedmessage_name !== false)));
+			$json_response->send(array('success' => $move_cannedmessage_name !== false));
 		}
 	}
 
@@ -390,12 +390,12 @@ class mcp_controller
 		}
 		else
 		{
-			$u_action .= "&amp;action=add";
+			$u_action .= '&amp;action=add';
 		}
 
 		$cannedmessage_content_preview = false;
 
-		if ($this->request->is_set_post('preview') && !empty($cannedmessage_data['cannedmessage_content']))
+		if (!empty($cannedmessage_data['cannedmessage_content']) && $this->request->is_set_post('preview'))
 		{
 			if (!class_exists('parse_message'))
 			{
@@ -406,9 +406,10 @@ class mcp_controller
 			$cannedmessage_content_preview = $message_parser->format_display(true, true, true, false);
 		}
 
+		$has_errors = (bool) count($this->errors);
 		$this->template->assign_vars(array(
-			'S_ERROR'   => (bool) count($this->errors),
-			'ERROR_MSG' => count($this->errors) ? implode('<br />', $this->errors) : '',
+			'S_ERROR'   => $has_errors,
+			'ERROR_MSG' => $has_errors ? implode('<br />', $this->errors) : '',
 
 			'S_CANNEDMESSAGE_ADD_OR_EDIT'	=> true,
 			'U_ACTION'						=> $u_action,

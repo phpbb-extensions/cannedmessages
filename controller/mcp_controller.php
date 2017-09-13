@@ -306,7 +306,7 @@ class mcp_controller
 
 			if (count($cannedmessage_children))
 			{
-				trigger_error($this->language->lang('CANNEDMESSAGE_HAS_CHILDREN_DEL') . '<br /><br />' . sprintf($this->language->lang('RETURN_PAGE'), '<a href="' . $this->get_main_u_action($cannedmessage['parent_id']) . '">', '</a>'));
+				trigger_error($this->language->lang('CANNEDMESSAGE_HAS_CHILDREN_DEL') . '<br /><br />' . $this->language->lang('RETURN_PAGE', '<a href="' . $this->get_main_u_action($cannedmessage['parent_id']) . '">', '</a>'));
 			}
 		}
 
@@ -318,7 +318,7 @@ class mcp_controller
 		else
 		{
 			$title = ($cannedmessage['is_cat'] ? 'CANNEDMESSAGES_DEL_CAT_CONFIRM' : 'CANNEDMESSAGES_DEL_CONFIRM');
-			confirm_box(false, sprintf($this->language->lang($title), $cannedmessage['cannedmessage_name']));
+			confirm_box(false, $this->language->lang($title, $cannedmessage['cannedmessage_name']));
 		}
 	}
 
@@ -332,14 +332,14 @@ class mcp_controller
 	{
 		if (!$cannedmessage_id)
 		{
-			trigger_error($this->language->lang('NO_CANNEDMESSAGE') . '<br /><br />' . sprintf($this->language->lang('RETURN_PAGE'), '<a href="' . $this->get_main_u_action(0) . '">', '</a>'));
+			trigger_error($this->language->lang('NO_CANNEDMESSAGE') . '<br /><br />' . $this->language->lang('RETURN_PAGE', '<a href="' . $this->get_main_u_action(0) . '">', '</a>'));
 		}
 
 		$cannedmessage = $this->manager->get_message($cannedmessage_id);
 
 		if (!$cannedmessage)
 		{
-			trigger_error($this->language->lang('NO_CANNEDMESSAGE') . '<br /><br />' . sprintf($this->language->lang('RETURN_PAGE'), '<a href="' . $this->get_main_u_action(0) . '">', '</a>'));
+			trigger_error($this->language->lang('NO_CANNEDMESSAGE') . '<br /><br />' . $this->language->lang('RETURN_PAGE', '<a href="' . $this->get_main_u_action(0) . '">', '</a>'));
 		}
 
 		$move_cannedmessage_name = $this->manager->move_message($cannedmessage, $direction);
@@ -463,6 +463,6 @@ class mcp_controller
 
 		$redirect = $this->get_main_u_action($cannedmessage['parent_id']);
 		meta_refresh(3, $redirect);
-		trigger_error($this->language->lang($message) . '<br /><br />' . sprintf($this->language->lang('RETURN_PAGE'), '<a href="' . $redirect . '">', '</a>'));
+		trigger_error($this->language->lang($message) . '<br /><br />' . $this->language->lang('RETURN_PAGE', '<a href="' . $redirect . '">', '</a>'));
 	}
 }

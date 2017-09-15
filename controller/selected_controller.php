@@ -60,6 +60,6 @@ class selected_controller
 	{
 		$cannedmessage = $this->manager->get_message($cannedmessage_id);
 
-		return isset($cannedmessage['cannedmessage_content']) ? $cannedmessage['cannedmessage_content'] : '';
+		return isset($cannedmessage['cannedmessage_content']) ? html_entity_decode($cannedmessage['cannedmessage_content']) : '';
 	}
 }

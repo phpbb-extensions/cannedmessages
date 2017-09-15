@@ -32,7 +32,7 @@ class install_cannedmessages_schema extends \phpbb\db\migration\migration
 						'parent_id'					=> array('UINT', 0),
 						'left_id'					=> array('UINT', 0),
 						'right_id'					=> array('UINT', 0),
-						'is_cat'					=> array('TINT', 0),
+						'is_cat'					=> array('TINT:2', 0),
 						'cannedmessage_name'		=> array('STEXT_UNI', ''),
 						'cannedmessage_content'		=> array('TEXT', ''),
 					),

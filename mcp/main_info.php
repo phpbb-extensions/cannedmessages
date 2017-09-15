@@ -15,7 +15,7 @@ namespace phpbb\cannedmessages\mcp;
  */
 class main_info
 {
-	function module()
+	public function module()
 	{
 		return array(
 			'filename'	=> '\phpbb\cannedmessages\mcp\main_module',

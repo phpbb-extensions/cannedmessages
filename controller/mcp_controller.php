@@ -51,15 +51,15 @@ class mcp_controller
 	/**
 	 * Constructor
 	 *
-	 * @param \phpbb\user						 $user		   User object
-	 * @param \phpbb\template\template           $template     Template object
-	 * @param \phpbb\language\language           $language     Language object
-	 * @param \phpbb\request\request             $request      Request object
- 	 * @param \phpbb\log\log					 $log		   The phpBB log system
-	 * @param \phpbb\cannedmessages\message\manager      $manager      Canned Messages manager object
-	 * @param string                             $root_path    phpBB root path
-	 * @param string							 $adm_relative_path  Admin relative path
-	 * @param string                             $php_ext      PHP extension
+	 * @param \phpbb\user                           $user              User object
+	 * @param \phpbb\template\template              $template          Template object
+	 * @param \phpbb\language\language              $language          Language object
+	 * @param \phpbb\request\request                $request           Request object
+	 * @param \phpbb\log\log                        $log               The phpBB log system
+	 * @param \phpbb\cannedmessages\message\manager $manager           Canned Messages manager object
+	 * @param string                                $root_path         phpBB root path
+	 * @param string                                $adm_relative_path Admin relative path
+	 * @param string                                $php_ext           PHP extension
 	 */
 	public function __construct(\phpbb\user $user, \phpbb\template\template $template, \phpbb\language\language $language, \phpbb\log\log $log, \phpbb\request\request $request, \phpbb\cannedmessages\message\manager $manager, $root_path, $adm_relative_path, $php_ext)
 	{
@@ -112,7 +112,7 @@ class mcp_controller
 			$this->language->add_lang('posting');
 			$this->{'action_' . $this->action}($this->request->variable($this->action === 'add' ? 'parent_id' : 'cannedmessage_id', 0));
 		}
-		elseif (in_array($this->action, array('move_up', 'move_down')))
+		else if (in_array($this->action, array('move_up', 'move_down')))
 		{
 			$this->move_message($this->action, $this->request->variable('cannedmessage_id', 0));
 		}
@@ -131,7 +131,7 @@ class mcp_controller
 		$parent_id = $this->request->variable('parent_id', 0);
 
 		// Get the parent name(s)
-		if ($this->request->is_set('parent_id'))
+		if ($parent_id)
 		{
 			$parents = array();
 			$parent_id_tracked = $parent_id;
@@ -161,11 +161,11 @@ class mcp_controller
 				];
 				$parents = array_reverse($parents);
 
-				for ($i = 0; count($parents) > $i; $i++)
+				foreach ($parents as $parent)
 				{
 					$this->template->assign_block_vars('parents', array(
-						'PARENT_NAME'	=> $parents[$i]['name'],
-						'U_PARENT'		=> $this->get_main_u_action($i > 0 ? $parents[$i]['id'] : 0),
+						'PARENT_NAME'	=> $parent['name'],
+						'U_PARENT'		=> $this->get_main_u_action($parent['id']),
 					));
 				}
 			}
@@ -186,7 +186,7 @@ class mcp_controller
 		}
 
 		$this->template->assign_vars(array(
-			'U_ACTION_ADD'				=> $this->get_main_u_action($parent_id) . "&amp;action=add",
+			'U_ACTION_ADD'				=> $this->get_main_u_action($parent_id) . '&amp;action=add',
 			'ICON_MOVE_UP'				=> '<img src="' . htmlspecialchars($this->phpbb_admin_images_path) . 'icon_up.gif" alt="' . $this->language->lang('MOVE_UP') . '" title="' . $this->language->lang('MOVE_UP') . '" />',
 			'ICON_MOVE_UP_DISABLED'		=> '<img src="' . htmlspecialchars($this->phpbb_admin_images_path) . 'icon_up_disabled.gif" alt="' . $this->language->lang('MOVE_UP') . '" title="' . $this->language->lang('MOVE_UP') . '" />',
 			'ICON_MOVE_DOWN'			=> '<img src="' . htmlspecialchars($this->phpbb_admin_images_path) . 'icon_down.gif" alt="' . $this->language->lang('MOVE_DOWN') . '" title="' . $this->language->lang('MOVE_DOWN') . '" />',
@@ -306,7 +306,7 @@ class mcp_controller
 
 			if (count($cannedmessage_children))
 			{
-				trigger_error($this->language->lang('CANNEDMESSAGE_HAS_CHILDREN_DEL') . '<br /><br />' . sprintf($this->language->lang('RETURN_PAGE'), '<a href="' . $this->get_main_u_action($cannedmessage['parent_id']) . '">', '</a>'));
+				trigger_error($this->language->lang('CANNEDMESSAGE_HAS_CHILDREN_DEL') . '<br /><br />' . $this->language->lang('RETURN_PAGE', '<a href="' . $this->get_main_u_action($cannedmessage['parent_id']) . '">', '</a>'));
 			}
 		}
 
@@ -318,7 +318,7 @@ class mcp_controller
 		else
 		{
 			$title = ($cannedmessage['is_cat'] ? 'CANNEDMESSAGES_DEL_CAT_CONFIRM' : 'CANNEDMESSAGES_DEL_CONFIRM');
-			confirm_box(false, sprintf($this->language->lang($title), $cannedmessage['cannedmessage_name']));
+			confirm_box(false, $this->language->lang($title, $cannedmessage['cannedmessage_name']));
 		}
 	}
 
@@ -332,14 +332,14 @@ class mcp_controller
 	{
 		if (!$cannedmessage_id)
 		{
-			trigger_error($this->language->lang('NO_CANNEDMESSAGE') . '<br /><br />' . sprintf($this->language->lang('RETURN_PAGE'), '<a href="' . $this->get_main_u_action(0) . '">', '</a>'));
+			trigger_error($this->language->lang('NO_CANNEDMESSAGE') . '<br /><br />' . $this->language->lang('RETURN_PAGE', '<a href="' . $this->get_main_u_action(0) . '">', '</a>'));
 		}
 
 		$cannedmessage = $this->manager->get_message($cannedmessage_id);
 
 		if (!$cannedmessage)
 		{
-			trigger_error($this->language->lang('NO_CANNEDMESSAGE') . '<br /><br />' . sprintf($this->language->lang('RETURN_PAGE'), '<a href="' . $this->get_main_u_action(0) . '">', '</a>'));
+			trigger_error($this->language->lang('NO_CANNEDMESSAGE') . '<br /><br />' . $this->language->lang('RETURN_PAGE', '<a href="' . $this->get_main_u_action(0) . '">', '</a>'));
 		}
 
 		$move_cannedmessage_name = $this->manager->move_message($cannedmessage, $direction);
@@ -352,7 +352,7 @@ class mcp_controller
 		if ($this->request->is_ajax())
 		{
 			$json_response = new \phpbb\json_response;
-			$json_response->send(array('success' => ($move_cannedmessage_name !== false)));
+			$json_response->send(array('success' => $move_cannedmessage_name !== false));
 		}
 	}
 
@@ -390,12 +390,12 @@ class mcp_controller
 		}
 		else
 		{
-			$u_action .= "&amp;action=add";
+			$u_action .= '&amp;action=add';
 		}
 
 		$cannedmessage_content_preview = false;
 
-		if ($this->request->is_set_post('preview') && !empty($cannedmessage_data['cannedmessage_content']))
+		if (!empty($cannedmessage_data['cannedmessage_content']) && $this->request->is_set_post('preview'))
 		{
 			if (!class_exists('parse_message'))
 			{
@@ -406,9 +406,10 @@ class mcp_controller
 			$cannedmessage_content_preview = $message_parser->format_display(true, true, true, false);
 		}
 
+		$has_errors = (bool) count($this->errors);
 		$this->template->assign_vars(array(
-			'S_ERROR'   => (bool) count($this->errors),
-			'ERROR_MSG' => count($this->errors) ? implode('<br />', $this->errors) : '',
+			'S_ERROR'   => $has_errors,
+			'ERROR_MSG' => $has_errors ? implode('<br />', $this->errors) : '',
 
 			'S_CANNEDMESSAGE_ADD_OR_EDIT'	=> true,
 			'U_ACTION'						=> $u_action,
@@ -462,6 +463,6 @@ class mcp_controller
 
 		$redirect = $this->get_main_u_action($cannedmessage['parent_id']);
 		meta_refresh(3, $redirect);
-		trigger_error($this->language->lang($message) . '<br /><br />' . sprintf($this->language->lang('RETURN_PAGE'), '<a href="' . $redirect . '">', '</a>'));
+		trigger_error($this->language->lang($message) . '<br /><br />' . $this->language->lang('RETURN_PAGE', '<a href="' . $redirect . '">', '</a>'));
 	}
 }

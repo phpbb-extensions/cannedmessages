@@ -1,6 +1,9 @@
 {% include 'mcp_header.html' %}
 {% INCLUDECSS '@phpbb_cannedmessages/cannedmessages.css' %}
-<!-- INCLUDEJS {T_ASSETS_PATH}/javascript/editor.js -->
+{% if S_CANNEDMESSAGE_ADD_OR_EDIT %}
+	{% INCLUDEJS T_ASSETS_PATH ~ '/javascript/editor.js' %}
+{% endif %}
+{% INCLUDEJS '@phpbb_cannedmessages/js/cannedmessages_mcp.js' %}
 
 <h2>{{ lang('MCP_CANNEDMESSAGES_TITLE') }}</h2>
 
@@ -75,7 +78,7 @@
 				<input type="submit" name="submit" id="submit" value="{{ lang('SUBMIT') }}" class="button1" />
 				<input type="submit" name="cancel" id="cancel" value="{{ lang('CANCEL') }}" class="button2" />
 				<input type="hidden" name="action_cancel" id="action_cancel" value="{{ U_ACTION_CANCEL }}" />
-				{S_FORM_TOKEN}
+				{{ S_FORM_TOKEN }}
 			</fieldset>
 		</form>
 
@@ -147,5 +150,4 @@
 	</div>
 </div>
 
-{% INCLUDEJS '@phpbb_cannedmessages/js/cannedmessages_mcp.js' %}
 {% include 'mcp_footer.html' %}

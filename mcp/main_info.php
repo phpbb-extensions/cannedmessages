@@ -23,7 +23,7 @@ class main_info
 			'modes'		=> array(
 				'manage'	=> array(
 					'title'	=> 'MCP_CANNEDMESSAGES_MANAGE',
-					'auth'	=> 'ext_phpbb/cannedmessages && acl_m_',
+					'auth'	=> 'ext_phpbb/cannedmessages && aclf_m_',
 					'cat'	=> array('MCP_CANNEDMESSAGES_TITLE')
 				),
 			),

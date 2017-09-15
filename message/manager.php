@@ -18,15 +18,19 @@ class manager
 	/** @var string */
 	protected $cannedmessages_table;
 
+	/** @var \phpbb\cache\driver\driver_interface */
+	protected $cache;
+
 	/**
 	 * Constructor
 	 *
 	 * @param    \phpbb\db\driver\driver_interface $db                 		DB driver interface
 	 * @param    string                            $cannedmessages_table 	Canned Messages table
 	 */
-	public function __construct(\phpbb\db\driver\driver_interface $db, $cannedmessages_table)
+	public function __construct(\phpbb\db\driver\driver_interface $db, \phpbb\cache\driver\driver_interface $cache, $cannedmessages_table)
 	{
 		$this->db = $db;
+		$this->cache = $cache;
 		$this->cannedmessages_table = $cannedmessages_table;
 	}
 
@@ -59,7 +63,7 @@ class manager
 		}
 
 		$sql = $this->db->sql_build_query('SELECT', $sql_array);
-		$result = $this->db->sql_query($sql, !$only_categories && $parent_id === null ? 600 : 0);
+		$result = $this->db->sql_query($sql, 3600);
 		$rowset = array();
 		while ($row = $this->db->sql_fetchrow($result))
 		{
@@ -115,7 +119,7 @@ class manager
 			FROM ' . $this->cannedmessages_table . '
 			WHERE cannedmessage_id = ' . (int) $message_id;
 
-		$result = $this->db->sql_query_limit($sql, 1);
+		$result = $this->db->sql_query_limit($sql, 1, 0, 3600);
 		$row = $this->db->sql_fetchrow($result);
 		$this->db->sql_freeresult($result);
 
@@ -237,12 +241,7 @@ class manager
 			if ($cannedmessage_data['parent_id'])
 			{
 				// Get the selected parent's information
-				$sql = 'SELECT left_id, right_id, is_cat
-					FROM ' . $this->cannedmessages_table . '
-					WHERE cannedmessage_id = ' . (int) $cannedmessage_data['parent_id'];
-				$result = $this->db->sql_query_limit($sql, 1);
-				$row = $this->db->sql_fetchrow($result);
-				$this->db->sql_freeresult($result);
+				$row = $this->get_message($cannedmessage_data['parent_id']);
 
 				if (!$row)
 				{
@@ -284,6 +283,7 @@ class manager
 			$sql = 'INSERT INTO ' . $this->cannedmessages_table . ' ' . $this->db->sql_build_array('INSERT', $cannedmessage_data);
 			$this->db->sql_query($sql);
 		}
+		$this->cache->destroy('sql', $this->cannedmessages_table);
 
 		return true;
 	}
@@ -298,6 +298,7 @@ class manager
 		$sql = 'DELETE FROM ' . $this->cannedmessages_table . '
 			WHERE cannedmessage_id = ' . (int) $cannedmessage['cannedmessage_id'];
 		$this->db->sql_query($sql);
+		$this->cache->destroy('sql', $this->cannedmessages_table);
 
 		$this->resync_tree($cannedmessage, 2);
 	}
@@ -361,6 +362,7 @@ class manager
 				left_id BETWEEN {$left_id} AND {$right_id}
 				AND right_id BETWEEN {$left_id} AND {$right_id}";
 		$this->db->sql_query($sql);
+		$this->cache->destroy('sql', $this->cannedmessages_table);
 
 		return $target['cannedmessage_name'];
 	}

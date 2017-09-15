@@ -345,7 +345,7 @@ class manager
 			$diff_down = $target['right_id'] - $cannedmessage['right_id'];
 
 			$move_up_left = $cannedmessage['right_id'] + 1;
-			$move_up_right = $cannedmessage['right_id'];
+			$move_up_right = $target['right_id'];
 		}
 
 		$sql = 'UPDATE ' . $this->cannedmessages_table . "

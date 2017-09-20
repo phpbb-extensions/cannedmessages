@@ -78,7 +78,10 @@ class main_listener implements EventSubscriberInterface
 	 */
 	public function add_lang_to_mcp($event)
 	{
-		$this->language->add_lang('info_acp_cannedmessages', 'phpbb/cannedmessages');
+		if ($event['module']->p_name === 'mcp_logs')
+		{
+			$this->language->add_lang('info_acp_cannedmessages', 'phpbb/cannedmessages');
+		}
 	}
 
 	/**

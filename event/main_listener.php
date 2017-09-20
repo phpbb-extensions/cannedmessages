@@ -44,6 +44,7 @@ class main_listener implements EventSubscriberInterface
 	public static function getSubscribedEvents()
 	{
 		return array(
+			'core.modify_mcp_modules_display_option' => 'add_lang_to_mcp',
 			'core.posting_modify_template_vars'	=> 'posting_modify_template_vars',
 		);
 	}
@@ -67,6 +68,16 @@ class main_listener implements EventSubscriberInterface
 		$this->manager = $manager;
 		$this->language = $language;
 		$this->controller_helper = $controller_helper;
+	}
+
+	/**
+	 * Add ACP lang file with log message keys for the MCP logs
+	 *
+	 * @param \phpbb\event\data	$event	Event object
+	 */
+	public function add_lang_to_mcp($event)
+	{
+		$this->language->add_lang('info_acp_cannedmessages', 'phpbb/cannedmessages');
 	}
 
 	/**

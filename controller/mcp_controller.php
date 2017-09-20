@@ -366,7 +366,7 @@ class mcp_controller
 	{
 		return [
 			'cannedmessage_id'			=> isset($cannedmessage['cannedmessage_id']) ? $cannedmessage['cannedmessage_id'] : 0,
-			'cannedmessage_name'		=> $this->request->variable('cannedmessage_name', isset($cannedmessage['cannedmessage_name']) ? $cannedmessage['cannedmessage_name'] : ''),
+			'cannedmessage_name'		=> $this->request->variable('cannedmessage_name', isset($cannedmessage['cannedmessage_name']) ? $cannedmessage['cannedmessage_name'] : '', true),
 			'parent_id'					=> $this->request->variable('cannedmessage_parent', isset($cannedmessage['parent_id']) ? $cannedmessage['parent_id'] : 0),
 			'is_cat'					=> $this->request->variable('is_cat', isset($cannedmessage['is_cat']) ? $cannedmessage['is_cat'] : 0),
 			'cannedmessage_content'		=> $this->request->variable('cannedmessage_content', isset($cannedmessage['cannedmessage_content']) ? $cannedmessage['cannedmessage_content'] : ''),

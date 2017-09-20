@@ -46,6 +46,7 @@ class main_listener implements EventSubscriberInterface
 		return array(
 			'core.modify_mcp_modules_display_option' => 'add_lang_to_mcp',
 			'core.posting_modify_template_vars'	=> 'posting_modify_template_vars',
+			'core.ucp_pm_compose_modify_data'	=> 'posting_modify_template_vars',
 		);
 	}
 

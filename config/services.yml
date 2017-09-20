@@ -6,6 +6,7 @@ services:
         class: phpbb\cannedmessages\message\manager
         arguments:
             - '@dbal.conn'
+            - '@cache.driver'
             - '%phpbb.cannedmessages.tables.cannedmessages%'
 
     phpbb.cannedmessages.listener:

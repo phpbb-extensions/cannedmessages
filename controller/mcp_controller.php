@@ -172,7 +172,7 @@ class mcp_controller
 			unset($parents);
 		}
 
-		foreach($this->manager->get_messages(true, $parent_id) as $cannedmessage_id => $cannedmessage_row)
+		foreach ($this->manager->get_messages($parent_id) as $cannedmessage_id => $cannedmessage_row)
 		{
 			$this->template->assign_block_vars('cannedmessages', array(
 				'CANNEDMESSAGE_ID'		=> $cannedmessage_id,
@@ -302,7 +302,7 @@ class mcp_controller
 		if ($cannedmessage['is_cat'])
 		{
 			// Check to see if there are any children
-			$cannedmessage_children = $this->manager->get_messages(true, $cannedmessage_id);
+			$cannedmessage_children = $this->manager->get_messages($cannedmessage_id);
 
 			if (count($cannedmessage_children))
 			{
@@ -415,7 +415,7 @@ class mcp_controller
 			'U_ACTION'						=> $u_action,
 			'U_ACTION_CANCEL'				=> $this->get_main_u_action($cannedmessage_data['parent_id']),
 			'CANNESMESSAGE_NAME'			=> $cannedmessage_data['cannedmessage_name'],
-			'S_CANNEDMESSAGE_PARENTS'		=> $this->manager->get_messages(false, null, true, $cannedmessage_data['parent_id']),
+			'S_CANNEDMESSAGE_PARENTS'		=> $this->manager->get_messages(null, true, $cannedmessage_data['parent_id']),
 			'IS_CAT'						=> $cannedmessage_data['is_cat'],
 			'CANNEDMESSAGE_CONTENT'			=> $cannedmessage_data['cannedmessage_content'],
 			'S_BBCODE_ALLOWED'				=> true,

@@ -1,44 +1,44 @@
 .quick {
-    float: right;
+	float: right;
 }
 
 .message-list-actions {
-    float: right !important;
-    padding: 2px 4px !important;
+	float: right !important;
+	padding: 2px 4px !important;
 }
 
 .parent-list {
-    margin-bottom: 10px !important;
+	margin-bottom: 10px !important;
 }
 
 .parent-list a {
-    font-weight: bold;
+	font-weight: bold;
 }
 
 #colour_palette dt {
-    display: none;
+	display: none;
 }
 
 #color_palette_placeholder {
-    margin-left: auto;
+	margin-left: auto;
 }
 
 #format-buttons {
-    margin-top: 0;
+	margin-top: 0;
 }
 
 #cannedmessage_preview dd {
-    width: 100%;
-    float: left;
-    margin-left: 0;
+	float: left;
+	width: 100%;
+	margin-left: 0;
 }
 
 ul li:first-child dd.message-list-actions .up,
 ul li:last-child dd.message-list-actions .down {
-    display: none;
+	display: none;
 }
 
 ul li:first-child dd.message-list-actions .up-disabled,
 ul li:last-child dd.message-list-actions .down-disabled {
-    display: inline !important;
+	display: inline !important;
 }

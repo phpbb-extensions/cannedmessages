@@ -86,10 +86,8 @@ class main_listener implements EventSubscriberInterface
 
 	/**
 	 * Adds the canned messages to the posting window when user is a moderator
-	 *
-	 * @param \phpbb\event\data	$event	Event object
 	 */
-	public function posting_modify_template_vars($event)
+	public function posting_modify_template_vars()
 	{
 		if ($this->can_view_cannedmessages())
 		{

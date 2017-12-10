@@ -24,8 +24,9 @@ class manager
 	/**
 	 * Constructor
 	 *
-	 * @param    \phpbb\db\driver\driver_interface $db                 		DB driver interface
-	 * @param    string                            $cannedmessages_table 	Canned Messages table
+	 * @param \phpbb\db\driver\driver_interface    $db                   DB driver interface
+	 * @param \phpbb\cache\driver\driver_interface $cache
+	 * @param string                               $cannedmessages_table Canned Messages table
 	 */
 	public function __construct(\phpbb\db\driver\driver_interface $db, \phpbb\cache\driver\driver_interface $cache, $cannedmessages_table)
 	{

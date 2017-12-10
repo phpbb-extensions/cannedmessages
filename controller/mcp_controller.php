@@ -399,7 +399,7 @@ class mcp_controller
 		{
 			if (!class_exists('parse_message'))
 			{
-				include("{$this->root_path}includes/message_parser.{$this->php_ext}");
+				include "{$this->root_path}includes/message_parser.{$this->php_ext}";
 			}
 
 			$message_parser = new \parse_message($cannedmessage_data['cannedmessage_content']);

@@ -24,8 +24,9 @@ class manager
 	/**
 	 * Constructor
 	 *
-	 * @param    \phpbb\db\driver\driver_interface $db                 		DB driver interface
-	 * @param    string                            $cannedmessages_table 	Canned Messages table
+	 * @param \phpbb\db\driver\driver_interface    $db                   DB driver interface
+	 * @param \phpbb\cache\driver\driver_interface $cache
+	 * @param string                               $cannedmessages_table Canned Messages table
 	 */
 	public function __construct(\phpbb\db\driver\driver_interface $db, \phpbb\cache\driver\driver_interface $cache, $cannedmessages_table)
 	{
@@ -37,13 +38,12 @@ class manager
 	/**
 	 * Gets messages based on the parent ID
 	 *
-	 * @param boolean $return_array		Indicates if array should be returned
 	 * @param int	  $parent_id		Parent ID to filter by
 	 * @param boolean $only_categories	Retrieve categories only
 	 * @param int	  $selected_id		Optional selected message ID
-	 * @return array|string  Array when $return_array is set to true, string when set to false
+	 * @return array  Array
 	 */
-	public function get_messages($return_array = false, $parent_id = null, $only_categories = false, $selected_id = 0)
+	public function get_messages($parent_id = null, $only_categories = false, $selected_id = 0)
 	{
 		$sql_array = array(
 			'SELECT' 	=> 'c.cannedmessage_id, c.parent_id, c.left_id, c.right_id, c.is_cat, c.cannedmessage_name, c.cannedmessage_content',
@@ -74,7 +74,7 @@ class manager
 		$right = 0;
 		$padding_store = array('0' => '');
 		$padding = '';
-		$cannedmessage_list = $return_array ? array() : '';
+		$cannedmessage_list = array();
 
 		foreach ($rowset as $row)
 		{
@@ -89,18 +89,10 @@ class manager
 			}
 
 			$right = $row['right_id'];
-			$disabled = $row['is_cat'];
+			$disabled = $row['is_cat'] && $only_categories ? false : $row['is_cat'];
 			$selected = (int) $selected_id === (int) $row['cannedmessage_id'];
 
-			if ($return_array)
-			{
-				// Include some more information...
-				$cannedmessage_list[$row['cannedmessage_id']] = array_merge(array('padding' => $padding, 'disabled' => $disabled, 'selected' => $selected), $row);
-			}
-			else
-			{
-				$cannedmessage_list .= '<option value="' . $row['cannedmessage_id'] . '" ' . (($disabled && !$only_categories) ? 'disabled="disabled" class="disabled-option"' : ($selected ? 'selected="selected"' : '')) . ' >' . $padding . $row['cannedmessage_name'] . '</option>';
-			}
+			$cannedmessage_list[$row['cannedmessage_id']] = array_merge(array('padding' => $padding, 'disabled' => $disabled, 'selected' => $selected), $row);
 		}
 		unset($padding_store, $rowset);
 
@@ -147,7 +139,7 @@ class manager
 
 			if (!$cannedmessage_data['is_cat'] &&
 				$cannedmessage_old['is_cat'] != $cannedmessage_data['is_cat'] &&
-				count($this->get_messages(true, $cannedmessage_data['cannedmessage_id'])))
+				count($this->get_messages($cannedmessage_data['cannedmessage_id'])))
 			{
 				// Check to see if there are any children and fail out
 				// Review this later to see if we can show a "new parent category" field instead of showing an error

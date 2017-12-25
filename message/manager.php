@@ -21,17 +21,22 @@ class manager
 	/** @var \phpbb\cache\driver\driver_interface */
 	protected $cache;
 
+	/** @var \phpbb\cannedmessages\message\nestedset */
+	protected $nestedset;
+
 	/**
 	 * Constructor
 	 *
-	 * @param \phpbb\db\driver\driver_interface    $db                   DB driver interface
-	 * @param \phpbb\cache\driver\driver_interface $cache
-	 * @param string                               $cannedmessages_table Canned Messages table
+	 * @param \phpbb\db\driver\driver_interface       $db
+	 * @param \phpbb\cache\driver\driver_interface    $cache
+	 * @param \phpbb\cannedmessages\message\nestedset $nestedset
+	 * @param   string                                $cannedmessages_table
 	 */
-	public function __construct(\phpbb\db\driver\driver_interface $db, \phpbb\cache\driver\driver_interface $cache, $cannedmessages_table)
+	public function __construct(\phpbb\db\driver\driver_interface $db, \phpbb\cache\driver\driver_interface $cache, \phpbb\cannedmessages\message\nestedset $nestedset, $cannedmessages_table)
 	{
 		$this->db = $db;
 		$this->cache = $cache;
+		$this->nestedset = $nestedset;
 		$this->cannedmessages_table = $cannedmessages_table;
 	}
 

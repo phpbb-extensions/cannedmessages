@@ -7,6 +7,7 @@ services:
         arguments:
             - '@dbal.conn'
             - '@cache.driver'
+            - '@phpbb.cannedmessages.nestedset'
             - '%phpbb.cannedmessages.tables.cannedmessages%'
 
     phpbb.cannedmessages.listener:

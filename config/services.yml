@@ -39,3 +39,17 @@ services:
         arguments:
             - '@phpbb.cannedmessages.message.manager'
             - '@request'
+
+    phpbb.cannedmessages.nestedset:
+        class: phpbb\cannedmessages\message\nestedset
+        arguments:
+            - '@dbal.conn'
+            - '@phpbb.cannedmessages.table_lock'
+            - '%phpbb.cannedmessages.tables.cannedmessages%'
+
+    phpbb.cannedmessages.table_lock:
+        class: phpbb\lock\db
+        arguments:
+            - cannedmessages.table_lock.cannedmessages_table
+            - '@config'
+            - '@dbal.conn'

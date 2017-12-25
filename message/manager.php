@@ -288,16 +288,13 @@ class manager
 	/**
 	 * Deletes a canned message
 	 *
-	 * @param $cannedmessage array The canned message data to delete
+	 * @param $id int The canned message id to delete
 	 */
-	public function delete_message($cannedmessage)
+	public function delete_message($id)
 	{
-		$sql = 'DELETE FROM ' . $this->cannedmessages_table . '
-			WHERE cannedmessage_id = ' . (int) $cannedmessage['cannedmessage_id'];
-		$this->db->sql_query($sql);
-		$this->cache->destroy('sql', $this->cannedmessages_table);
+		$this->nestedset->delete($id);
 
-		$this->resync_tree($cannedmessage, 2);
+		$this->cache->destroy('sql', $this->cannedmessages_table);
 	}
 
 	/**

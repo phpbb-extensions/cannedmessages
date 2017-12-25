@@ -312,7 +312,7 @@ class mcp_controller
 
 		if (confirm_box(true))
 		{
-			$this->manager->delete_message($cannedmessage);
+			$this->manager->delete_message((int) $cannedmessage['cannedmessage_id']);
 			$this->success($cannedmessage['is_cat'] ? 'CANNEDMESSAGE_CAT_DELETED' : 'CANNEDMESSAGE_DELETED', 'DELETE', $cannedmessage);
 		}
 		else

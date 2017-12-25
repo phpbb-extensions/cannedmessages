@@ -342,17 +342,17 @@ class mcp_controller
 			trigger_error($this->language->lang('NO_CANNEDMESSAGE') . '<br /><br />' . $this->language->lang('RETURN_PAGE', '<a href="' . $this->get_main_u_action(0) . '">', '</a>'));
 		}
 
-		$move_cannedmessage_name = $this->manager->move_message($cannedmessage, $direction);
+		$moved = $this->manager->move_message($cannedmessage_id, $direction);
 
-		if ($move_cannedmessage_name !== false)
+		if ($moved !== false)
 		{
-			$this->log(strtoupper($direction), array($cannedmessage['cannedmessage_name'], $move_cannedmessage_name));
+			$this->log(strtoupper($direction), array($cannedmessage['cannedmessage_name'], $cannedmessage['cannedmessage_name']));
 		}
 
 		if ($this->request->is_ajax())
 		{
 			$json_response = new \phpbb\json_response;
-			$json_response->send(array('success' => $move_cannedmessage_name !== false));
+			$json_response->send(array('success' => $moved));
 		}
 	}
 

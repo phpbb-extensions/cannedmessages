@@ -300,65 +300,32 @@ class manager
 	/**
 	 * Moves message up or down depending on what the user wanted
 	 *
-	 * @param $cannedmessage array  The canned message that will be moved
-	 * @param $direction	 string The direction to move the canned message
-	 * @return bool|string	 False if there was no need to move the message or the message name if successful.
+	 * @param $id         int    The canned message id to be moved
+	 * @param $direction  string The direction to move the canned message
+	 * @return bool True if the message was moved or False if the message was not moved
 	 */
-	public function move_message($cannedmessage, $direction)
+	public function move_message($id, $direction)
 	{
-		$sql = 'SELECT cannedmessage_id, cannedmessage_name, left_id, right_id
-			FROM ' . $this->cannedmessages_table . "
-			WHERE parent_id = {$cannedmessage['parent_id']}
-				AND " . (($direction === 'move_up') ? "right_id < {$cannedmessage['right_id']} ORDER BY right_id DESC" : "left_id > {$cannedmessage['left_id']} ORDER BY left_id ASC");
-		$result = $this->db->sql_query_limit($sql, 1);
-		$target = $this->db->sql_fetchrow($result);
-		$this->db->sql_freeresult($result);
-
-		if (!count($target))
-		{
-			// The canned message is already on top or bottom
-			return false;
-		}
-
 		if ($direction === 'move_up')
 		{
-			$left_id = $target['left_id'];
-			$right_id = $cannedmessage['right_id'];
-
-			$diff_up = $cannedmessage['left_id'] - $target['left_id'];
-			$diff_down = $cannedmessage['right_id'] + 1 - $cannedmessage['left_id'];
-
-			$move_up_left = $cannedmessage['left_id'];
-			$move_up_right = $cannedmessage['right_id'];
+			$delta = 1;
+		}
+		else if ($direction === 'move_down')
+		{
+			$delta = -1;
 		}
 		else
 		{
-			$left_id = $cannedmessage['left_id'];
-			$right_id = $target['right_id'];
-
-			$diff_up = $cannedmessage['right_id'] + 1 - $cannedmessage['left_id'];
-			$diff_down = $target['right_id'] - $cannedmessage['right_id'];
-
-			$move_up_left = $cannedmessage['right_id'] + 1;
-			$move_up_right = $target['right_id'];
+			$delta = 0;
 		}
 
-		$sql = 'UPDATE ' . $this->cannedmessages_table . "
-			SET left_id = left_id + CASE
-				WHEN left_id BETWEEN {$move_up_left} AND {$move_up_right} THEN -{$diff_up}
-				ELSE {$diff_down}
-			END,
-			right_id = right_id + CASE
-				WHEN right_id BETWEEN {$move_up_left} AND {$move_up_right} THEN -{$diff_up}
-				ELSE {$diff_down}
-			END
-			WHERE
-				left_id BETWEEN {$left_id} AND {$right_id}
-				AND right_id BETWEEN {$left_id} AND {$right_id}";
-		$this->db->sql_query($sql);
-		$this->cache->destroy('sql', $this->cannedmessages_table);
+		if ($this->nestedset->move($id, $delta))
+		{
+			$this->cache->destroy('sql', $this->cannedmessages_table);
+			return true;
+		}
 
-		return $target['cannedmessage_name'];
+		return false;
 	}
 
 	/**

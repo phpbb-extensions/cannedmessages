@@ -226,7 +226,7 @@ class manager
 	 *
 	 * @param $id         int    The canned message id to be moved
 	 * @param $direction  string The direction to move the canned message
-	 * @return bool True if the message was moved or False if the message was not moved
+	 * @return bool|string False if there the message was not moved, or the name of the message moved over if successful.
 	 */
 	public function move_message($id, $direction)
 	{
@@ -250,9 +250,36 @@ class manager
 			return false;
 		}
 
-		$this->cache->destroy('sql', $this->cannedmessages_table);
+		if ($result)
+		{
+			$this->cache->destroy('sql', $this->cannedmessages_table);
+			return 	$this->get_leap_over_name($id, $delta);
+		}
 
-		return $result;
+		return false;
+	}
+
+	/**
+	 * Get the name of the canned message that was leaped over by a moved message.
+	 * This is needed to fulfill the admin log, e.g, "Moved canned message X above Y".
+	 * The moved canned message is "X" and we need to get the name of "Y" for logging purposes.
+	 *
+	 * @param $id    int The ID of the canned message that was moved
+	 * @param $delta int The direction it moved (1 = up, -1 = down)
+	 * @return mixed The name of the canned message that was leaped over, or false if something went wrong.
+	 */
+	protected function get_leap_over_name($id, $delta)
+	{
+		$sql = 'SELECT cannedmessage_name
+				FROM ' . $this->cannedmessages_table . '
+				WHERE ' . ($delta === 1 ? 'left_id' : 'right_id') . ' = (SELECT ' . ($delta === 1 ? 'right_id' : 'left_id') . ' 
+					FROM ' . $this->cannedmessages_table . ' 
+					WHERE cannedmessage_id = ' . (int) $id . ') + ' . $delta;
+		$result = $this->db->sql_query_limit($sql, 1);
+		$name = $this->db->sql_fetchfield('cannedmessage_name');
+		$this->db->sql_freeresult($result);
+
+		return $name;
 	}
 
 	/**

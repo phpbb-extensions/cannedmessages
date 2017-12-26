@@ -138,66 +138,75 @@ class manager
 			$cannedmessage_data['cannedmessage_content'] = '';
 		}
 
-		// Update an existing message
-		if ($cannedmessage_data['cannedmessage_id'] > 0)
+		$action = ($cannedmessage_data['cannedmessage_id'] > 0) ? 'update' : 'insert';
+
+		if ($error = $this->{$action}($cannedmessage_data))
 		{
-			// Get the original canned message data
-			$cannedmessage_old = $this->get_message($cannedmessage_data['cannedmessage_id']);
-
-			if (!$cannedmessage_data['is_cat'] &&
-				$cannedmessage_old['is_cat'] != $cannedmessage_data['is_cat'] &&
-				count($this->nestedset->get_subtree_data($cannedmessage_data['cannedmessage_id'], false, false)))
-			{
-				// Check to see if there are any children and fail out
-				// Review this later to see if we can show a "new parent category" field instead of showing an error
-				return 'CANNEDMESSAGE_HAS_CHILDREN';
-			}
-
-			// Update the parent/tree if needed
-			if ($cannedmessage_data['parent_id'] != $cannedmessage_old['parent_id'])
-			{
-				try
-				{
-					$this->nestedset->change_parent($cannedmessage_data['cannedmessage_id'], $cannedmessage_data['parent_id']);
-					unset($cannedmessage_data['parent_id']);
-				}
-				catch (\OutOfBoundsException $e)
-				{
-					return $e->getMessage();
-				}
-			}
-
-			$this->nestedset->update_item($cannedmessage_data['cannedmessage_id'], $cannedmessage_data);
+			return $error;
 		}
-		else
-		{
-			if ($cannedmessage_data['parent_id'])
-			{
-				// Get the selected parent's information
-				$row = $this->get_message($cannedmessage_data['parent_id']);
-				if (!$row['is_cat'])
-				{
-					return 'CANNEDMESSAGE_PARENT_IS_NOT_CAT';
-				}
-			}
 
-			$cannedmessage_new = $this->nestedset->insert($cannedmessage_data);
-
-			if ($cannedmessage_data['parent_id'])
-			{
-				try
-				{
-					$this->nestedset->change_parent($cannedmessage_new['cannedmessage_id'], $cannedmessage_data['parent_id']);
-				}
-				catch (\OutOfBoundsException $e)
-				{
-					return $e->getMessage();
-				}
-			}
-		}
 		$this->cache->destroy('sql', $this->cannedmessages_table);
 
 		return true;
+	}
+
+	/**
+	 * Update an existing canned message
+	 *
+	 * @param $cannedmessage_data array Contains the data to save
+	 * @return bool|string Key of error message or false if no error occurred
+	 */
+	protected function update($cannedmessage_data)
+	{
+		// Get the original canned message data
+		$cannedmessage_old = $this->get_message($cannedmessage_data['cannedmessage_id']);
+
+		if (!$cannedmessage_data['is_cat'] &&
+			$cannedmessage_old['is_cat'] != $cannedmessage_data['is_cat'] &&
+			count($this->nestedset->get_subtree_data($cannedmessage_data['cannedmessage_id'], false, false)))
+		{
+			// Check to see if there are any children and fail out
+			// Review this later to see if we can show a "new parent category" field instead of showing an error
+			return 'CANNEDMESSAGE_HAS_CHILDREN';
+		}
+
+		// Update the parent/tree if needed
+		if ($cannedmessage_data['parent_id'] != $cannedmessage_old['parent_id'] &&
+			($error = $this->change_parent($cannedmessage_data['cannedmessage_id'], $cannedmessage_data['parent_id'])))
+		{
+			return $error;
+		}
+
+		$this->nestedset->update_item($cannedmessage_data['cannedmessage_id'], $cannedmessage_data);
+
+		return false;
+	}
+
+	/**
+	 * Insert a new canned message
+	 *
+	 * @param $cannedmessage_data array Contains the data to save
+	 * @return bool|string Key of error message or false if no error occurred
+	 */
+	protected function insert($cannedmessage_data)
+	{
+		$cannedmessage_new = $this->nestedset->insert($cannedmessage_data);
+
+		if ($cannedmessage_data['parent_id'])
+		{
+			// Check if the selected parent is a category
+			$row = $this->get_message($cannedmessage_data['parent_id']);
+			if (!$row['is_cat'])
+			{
+				$this->delete_message($cannedmessage_new['cannedmessage_id']);
+				return 'CANNEDMESSAGE_PARENT_IS_NOT_CAT';
+			}
+
+			// Update parent/tree ids
+			return $this->change_parent($cannedmessage_new['cannedmessage_id'], $cannedmessage_data['parent_id']);
+		}
+
+		return false;
 	}
 
 	/**
@@ -244,5 +253,26 @@ class manager
 		$this->cache->destroy('sql', $this->cannedmessages_table);
 
 		return $result;
+	}
+
+	/**
+	 * Update the parent id and re-sync the tree ids
+	 *
+	 * @param $id int     The message ID
+	 * @param $parent int The message's parent ID
+	 * @return bool|string Key of error message or false if no error occurred
+	 */
+	protected function change_parent($id, $parent)
+	{
+		try
+		{
+			$this->nestedset->change_parent($id, $parent);
+		}
+		catch (\OutOfBoundsException $e)
+		{
+			return $e->getMessage();
+		}
+
+		return false;
 	}
 }

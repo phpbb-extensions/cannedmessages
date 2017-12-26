@@ -34,6 +34,7 @@ $lang = array_merge($lang, array(
 	'MESSAGE_CONTENT_REQUIRED'			=> 'Message content is required when message is not a category',
 	'CANNEDMESSAGE_UPDATED'				=> 'Canned message has been updated.',
 	'CANNEDMESSAGE_CREATED'				=> 'Canned message has been created.',
+	'CANNEDMESSAGE_INVALID_ITEM'		=> 'Canned message does not exist.',
 	'CANNEDMESSAGE_INVALID_PARENT'		=> 'Canned message parent does not exist.',
 	'CANNEDMESSAGE_PARENT_IS_NOT_CAT'	=> 'Canned message parent is not a category.',
 	'CANNEDMESSAGE_HAS_CHILDREN'		=> 'Canned message category has children and cannot be changed to be a message. Please remove children first.',

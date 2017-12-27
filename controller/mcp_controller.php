@@ -111,16 +111,19 @@ class mcp_controller
 		{
 			$this->language->add_lang('posting');
 			$this->{'action_' . $this->action}($this->request->variable($this->action === 'add' ? 'parent_id' : 'cannedmessage_id', 0));
+			if ($this->action !== 'delete')
+			{
+				return;
+			}
 		}
 		else if (in_array($this->action, array('move_up', 'move_down')))
 		{
 			$this->move_message($this->action, $this->request->variable('cannedmessage_id', 0));
+			return;
 		}
-		else
-		{
-			// Otherwise default to this
-			$this->list_messages();
-		}
+
+		// Otherwise default to this
+		$this->list_messages();
 	}
 
 	/**

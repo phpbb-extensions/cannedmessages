@@ -183,8 +183,8 @@ class mcp_controller
 				'U_CANNEDMESSAGE'		=> $cannedmessage_row['is_cat'] ? $this->get_main_u_action($cannedmessage_id) : false,
 				'U_MOVE_UP'				=> $this->get_main_u_action($parent_id) . "&amp;action=move_up&amp;cannedmessage_id={$cannedmessage_id}&amp;hash=" . generate_link_hash('up' . $cannedmessage_id),
 				'U_MOVE_DOWN'			=> $this->get_main_u_action($parent_id) . "&amp;action=move_down&amp;cannedmessage_id={$cannedmessage_id}&amp;hash=" . generate_link_hash('down' . $cannedmessage_id),
-				'U_EDIT'				=> $this->get_main_u_action($parent_id) . "&amp;action=edit&amp;cannedmessage_id={$cannedmessage_id}&amp;",
-				'U_DELETE'				=> $this->get_main_u_action($parent_id) . "&amp;action=delete&amp;cannedmessage_id={$cannedmessage_id}&amp;",
+				'U_EDIT'				=> $this->get_main_u_action($parent_id) . "&amp;action=edit&amp;cannedmessage_id={$cannedmessage_id}",
+				'U_DELETE'				=> $this->get_main_u_action($parent_id) . "&amp;action=delete&amp;cannedmessage_id={$cannedmessage_id}",
 			));
 		}
 
@@ -335,14 +335,14 @@ class mcp_controller
 	{
 		if (!$cannedmessage_id)
 		{
-			trigger_error($this->language->lang('NO_CANNEDMESSAGE') . '<br /><br />' . $this->language->lang('RETURN_PAGE', '<a href="' . $this->get_main_u_action(0) . '">', '</a>'));
+			trigger_error($this->language->lang('CANNEDMESSAGE_INVALID_ITEM') . '<br /><br />' . $this->language->lang('RETURN_PAGE', '<a href="' . $this->get_main_u_action(0) . '">', '</a>'));
 		}
 
 		$cannedmessage = $this->manager->get_message($cannedmessage_id);
 
 		if (!$cannedmessage)
 		{
-			trigger_error($this->language->lang('NO_CANNEDMESSAGE') . '<br /><br />' . $this->language->lang('RETURN_PAGE', '<a href="' . $this->get_main_u_action(0) . '">', '</a>'));
+			trigger_error($this->language->lang('CANNEDMESSAGE_INVALID_ITEM') . '<br /><br />' . $this->language->lang('RETURN_PAGE', '<a href="' . $this->get_main_u_action(0) . '">', '</a>'));
 		}
 
 		$result = $this->manager->move_message($cannedmessage_id, $direction);

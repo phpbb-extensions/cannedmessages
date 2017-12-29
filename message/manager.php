@@ -160,6 +160,10 @@ class manager
 	{
 		// Get the original canned message data
 		$cannedmessage_old = $this->get_message($cannedmessage_data['cannedmessage_id']);
+		if (!$cannedmessage_old)
+		{
+			return 'CANNEDMESSAGE_INVALID_ITEM';
+		}
 
 		if (!$cannedmessage_data['is_cat'] &&
 			$cannedmessage_old['is_cat'] != $cannedmessage_data['is_cat'] &&
@@ -171,7 +175,7 @@ class manager
 		}
 
 		// Update the parent/tree if needed
-		if ($cannedmessage_data['parent_id'] != $cannedmessage_old['parent_id'] &&
+		if ($cannedmessage_data['parent_id'] !== $cannedmessage_old['parent_id'] &&
 			($error = $this->change_parent($cannedmessage_data['cannedmessage_id'], $cannedmessage_data['parent_id'])))
 		{
 			return $error;

@@ -5,10 +5,8 @@ services:
     phpbb.cannedmessages.message.manager:
         class: phpbb\cannedmessages\message\manager
         arguments:
-            - '@dbal.conn'
             - '@cache.driver'
             - '@phpbb.cannedmessages.nestedset'
-            - '%phpbb.cannedmessages.tables.cannedmessages%'
 
     phpbb.cannedmessages.listener:
         class: phpbb\cannedmessages\event\main_listener

@@ -39,6 +39,19 @@ class nestedset extends \phpbb\tree\nestedset
 	}
 
 	/**
+	 * Set additional sql where restrictions
+	 *
+	 * @param string $where An SQL where condition
+	 * @return nestedset $this object for chaining calls
+	 */
+	public function set_sql_where($where)
+	{
+		$this->sql_where = '%s' . $where;
+
+		return $this;
+	}
+
+	/**
 	 * Update a nested item
 	 *
 	 * @param int   $item_id   The item identifier
@@ -56,15 +69,18 @@ class nestedset extends \phpbb\tree\nestedset
 	}
 
 	/**
-	 * Set additional sql where restrictions
+	 * Get the canned message that was affected by a moved message.
 	 *
-	 * @param string $where An SQL where condition
-	 * @return nestedset $this object for chaining calls
+	 * @param $id    int The ID of the canned message that was moved
+	 * @param $delta int The direction it moved (1 = up, -1 = down)
+	 * @return mixed The name of the canned message that was leaped over, or false if something went wrong.
 	 */
-	public function set_sql_where($where)
+	public function affected_by_move($id, $delta)
 	{
-		$this->sql_where = '%s' . $where;
+		$where = ($delta === 1 ? 'left_id' : 'right_id') . ' = (SELECT ' . ($delta === 1 ? 'right_id' : 'left_id') . ' 
+			FROM ' . $this->table_name . ' 
+			WHERE cannedmessage_id = ' . (int) $id . ') + ' . $delta;
 
-		return $this;
+		return current($this->set_sql_where($where)->get_all_tree_data());
 	}
 }

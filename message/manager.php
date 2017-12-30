@@ -12,12 +12,6 @@ namespace phpbb\cannedmessages\message;
 
 class manager
 {
-	/** @var \phpbb\db\driver\driver_interface */
-	protected $db;
-
-	/** @var string */
-	protected $cannedmessages_table;
-
 	/** @var \phpbb\cache\driver\driver_interface */
 	protected $cache;
 
@@ -27,70 +21,50 @@ class manager
 	/**
 	 * Constructor
 	 *
-	 * @param \phpbb\db\driver\driver_interface       $db
 	 * @param \phpbb\cache\driver\driver_interface    $cache
 	 * @param \phpbb\cannedmessages\message\nestedset $nestedset
-	 * @param   string                                $cannedmessages_table
 	 */
-	public function __construct(\phpbb\db\driver\driver_interface $db, \phpbb\cache\driver\driver_interface $cache, \phpbb\cannedmessages\message\nestedset $nestedset, $cannedmessages_table)
+	public function __construct(\phpbb\cache\driver\driver_interface $cache, \phpbb\cannedmessages\message\nestedset $nestedset)
 	{
-		$this->db = $db;
 		$this->cache = $cache;
 		$this->nestedset = $nestedset;
-		$this->cannedmessages_table = $cannedmessages_table;
 	}
 
 	/**
 	 * Gets messages (all messages, or all messages within a given category)
+	 * All messages will be cached to optimize posting pages
 	 *
 	 * @param int     $parent_id       Parent ID to filter by
-	 * @param int     $cache           Time to cache the SQl result for
 	 * @return array  Array
 	 */
-	public function get_messages($parent_id = null, $cache = 3600)
+	public function get_messages($parent_id = null)
 	{
-		$sql_array = array(
-			'SELECT' 	=> 'c.cannedmessage_id, c.parent_id, c.left_id, c.right_id, c.is_cat, c.cannedmessage_name, c.cannedmessage_content',
-			'FROM'		=> array($this->cannedmessages_table => 'c'),
-			'WHERE'		=> array(),
-			'ORDER_BY'	=> 'c.left_id ASC'
-		);
-
 		if ($parent_id !== null)
 		{
-			$sql_array['WHERE'][] = 'c.parent_id = ' . (int) $parent_id;
+			$messages = $this->nestedset
+				->set_sql_where('parent_id = ' . (int) $parent_id)
+				->get_all_tree_data();
 		}
-
-		$sql = $this->db->sql_build_query('SELECT', $sql_array);
-		$result = $this->db->sql_query($sql, $cache);
-		$rowset = array();
-		while ($row = $this->db->sql_fetchrow($result))
+		else if (($messages = $this->cache->get('_canned_messages')) === false)
 		{
-			$rowset[(int) $row['cannedmessage_id']] = $row;
+			$messages = $this->nestedset->get_all_tree_data();
+			$this->cache->put('_canned_messages', $messages, 3600);
 		}
-		$this->db->sql_freeresult($result);
 
-		return $this->messages_list($rowset);
+		return $this->messages_list($messages);
 	}
 
 	/**
 	 * Gets a specific message
 	 *
-	 * @param int $message_id The message ID to retrieve
-	 * @param int $cache      Time to cache the SQl result for
-	 * @return array
+	 * @param int $id The message ID to retrieve
+	 * @return mixed Array of data, or false if no data found
 	 */
-	public function get_message($message_id, $cache = 3600)
+	public function get_message($id)
 	{
-		$sql = 'SELECT cannedmessage_id, parent_id, left_id, right_id, is_cat, cannedmessage_name, cannedmessage_content
-			FROM ' . $this->cannedmessages_table . '
-			WHERE cannedmessage_id = ' . (int) $message_id;
+		$message = $this->nestedset->get_subtree_data($id);
 
-		$result = $this->db->sql_query_limit($sql, 1, 0, $cache);
-		$row = $this->db->sql_fetchrow($result);
-		$this->db->sql_freeresult($result);
-
-		return $row;
+		return count($message) ? $message[$id] : false;
 	}
 
 	/**
@@ -123,34 +97,34 @@ class manager
 	 * Add padding, disabled and selected states to the canned messages data array
 	 * for proper display of them in drop down menus.
 	 *
-	 * @param array $rowset      Canned messages data
+	 * @param array $messages      Canned messages data
 	 * @param int   $selected_id The ID of the currently selected message/category
 	 * @return array
 	 */
-	public function messages_list($rowset, $selected_id = 0)
+	protected function messages_list($messages, $selected_id = 0)
 	{
 		$right = 0;
 		$padding_store = array('0' => '');
 		$padding = '';
 		$list = array();
 
-		foreach ($rowset as $row)
+		foreach ($messages as $message)
 		{
-			if ($row['left_id'] < $right)
+			if ($message['left_id'] < $right)
 			{
 				$padding .= '&nbsp; &nbsp;';
-				$padding_store[$row['parent_id']] = $padding;
+				$padding_store[$message['parent_id']] = $padding;
 			}
-			else if ($row['left_id'] > $right + 1)
+			else if ($message['left_id'] > $right + 1)
 			{
-				$padding = isset($padding_store[$row['parent_id']]) ? $padding_store[$row['parent_id']] : '';
+				$padding = isset($padding_store[$message['parent_id']]) ? $padding_store[$message['parent_id']] : '';
 			}
 
-			$right = $row['right_id'];
-			$disabled = $row['is_cat'] && $selected_id ? false : $row['is_cat'];
-			$selected = (int) $selected_id === (int) $row['cannedmessage_id'];
+			$right = $message['right_id'];
+			$disabled = $message['is_cat'] && $selected_id ? false : $message['is_cat'];
+			$selected = (int) $selected_id === (int) $message['cannedmessage_id'];
 
-			$list[$row['cannedmessage_id']] = array_merge(array('padding' => $padding, 'disabled' => $disabled, 'selected' => $selected), $row);
+			$list[$message['cannedmessage_id']] = array_merge(array('padding' => $padding, 'disabled' => $disabled, 'selected' => $selected), $message);
 		}
 
 		return $list;
@@ -175,13 +149,8 @@ class manager
 	 */
 	public function is_cat($id)
 	{
-		$sql = 'SELECT is_cat FROM ' . $this->cannedmessages_table . '
-			WHERE cannedmessage_id = ' . (int) $id;
-		$result = $this->db->sql_query($sql);
-		$is_cat = $this->db->sql_fetchfield('is_cat');
-		$this->db->sql_freeresult($result);
-
-		return (bool) $is_cat;
+		$message = $this->get_message($id);
+		return (bool) $message['is_cat'];
 	}
 
 	/**
@@ -205,7 +174,7 @@ class manager
 			return $error;
 		}
 
-		$this->cache->destroy('sql', $this->cannedmessages_table);
+		$this->cache->destroy('_canned_messages');
 
 		return true;
 	}
@@ -279,7 +248,7 @@ class manager
 	{
 		$this->nestedset->delete($id);
 
-		$this->cache->destroy('sql', $this->cannedmessages_table);
+		$this->cache->destroy('_canned_messages');
 	}
 
 	/**
@@ -313,34 +282,12 @@ class manager
 
 		if ($result)
 		{
-			$this->cache->destroy('sql', $this->cannedmessages_table);
-			return 	$this->get_leap_over_name($id, $delta);
+			$this->cache->destroy('_canned_messages');
+			$moved = $this->nestedset->affected_by_move($id, $delta);
+			return $moved['cannedmessage_name'];
 		}
 
 		return false;
-	}
-
-	/**
-	 * Get the name of the canned message that was leaped over by a moved message.
-	 * This is needed to fulfill the admin log, e.g, "Moved canned message X above Y".
-	 * The moved canned message is "X" and we need to get the name of "Y" for logging purposes.
-	 *
-	 * @param $id    int The ID of the canned message that was moved
-	 * @param $delta int The direction it moved (1 = up, -1 = down)
-	 * @return mixed The name of the canned message that was leaped over, or false if something went wrong.
-	 */
-	protected function get_leap_over_name($id, $delta)
-	{
-		$sql = 'SELECT cannedmessage_name
-				FROM ' . $this->cannedmessages_table . '
-				WHERE ' . ($delta === 1 ? 'left_id' : 'right_id') . ' = (SELECT ' . ($delta === 1 ? 'right_id' : 'left_id') . ' 
-					FROM ' . $this->cannedmessages_table . ' 
-					WHERE cannedmessage_id = ' . (int) $id . ') + ' . $delta;
-		$result = $this->db->sql_query_limit($sql, 1);
-		$name = $this->db->sql_fetchfield('cannedmessage_name');
-		$this->db->sql_freeresult($result);
-
-		return $name;
 	}
 
 	/**

@@ -54,4 +54,17 @@ class nestedset extends \phpbb\tree\nestedset
 
 		return $this->db->sql_affectedrows();
 	}
+
+	/**
+	 * Set additional sql where restrictions
+	 *
+	 * @param string $where An SQL where condition
+	 * @return nestedset $this object for chaining calls
+	 */
+	public function set_sql_where($where)
+	{
+		$this->sql_where = '%s' . $where;
+
+		return $this;
+	}
 }

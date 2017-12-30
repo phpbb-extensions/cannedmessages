@@ -41,15 +41,13 @@ class manager
 	}
 
 	/**
-	 * Gets messages based on the parent ID
+	 * Gets messages (all messages, or all messages within a given category)
 	 *
 	 * @param int     $parent_id       Parent ID to filter by
-	 * @param boolean $only_categories Retrieve categories only
-	 * @param int     $selected_id     Optional selected message ID
 	 * @param int     $cache           Time to cache the SQl result for
 	 * @return array  Array
 	 */
-	public function get_messages($parent_id = null, $only_categories = false, $selected_id = 0, $cache = 3600)
+	public function get_messages($parent_id = null, $cache = 3600)
 	{
 		$sql_array = array(
 			'SELECT' 	=> 'c.cannedmessage_id, c.parent_id, c.left_id, c.right_id, c.is_cat, c.cannedmessage_name, c.cannedmessage_content',
@@ -63,11 +61,6 @@ class manager
 			$sql_array['WHERE'][] = 'c.parent_id = ' . (int) $parent_id;
 		}
 
-		if ($only_categories)
-		{
-			$sql_array['WHERE'][] = 'c.is_cat = 1';
-		}
-
 		$sql = $this->db->sql_build_query('SELECT', $sql_array);
 		$result = $this->db->sql_query($sql, $cache);
 		$rowset = array();
@@ -77,10 +70,69 @@ class manager
 		}
 		$this->db->sql_freeresult($result);
 
+		return $this->messages_list($rowset);
+	}
+
+	/**
+	 * Gets a specific message
+	 *
+	 * @param int $message_id The message ID to retrieve
+	 * @param int $cache      Time to cache the SQl result for
+	 * @return array
+	 */
+	public function get_message($message_id, $cache = 3600)
+	{
+		$sql = 'SELECT cannedmessage_id, parent_id, left_id, right_id, is_cat, cannedmessage_name, cannedmessage_content
+			FROM ' . $this->cannedmessages_table . '
+			WHERE cannedmessage_id = ' . (int) $message_id;
+
+		$result = $this->db->sql_query_limit($sql, 1, 0, $cache);
+		$row = $this->db->sql_fetchrow($result);
+		$this->db->sql_freeresult($result);
+
+		return $row;
+	}
+
+	/**
+	 * Get message categories
+	 *
+	 * @param int $selected_id The ID of the currently selected message/category
+	 * @return array
+	 */
+	public function get_categories($selected_id = 0)
+	{
+		$categories = $this->nestedset
+			->set_sql_where('is_cat = 1')
+			->get_all_tree_data();
+
+		return $this->messages_list($categories, $selected_id);
+	}
+
+	/**
+	 * Get all parents of a message or category
+	 *
+	 * @param int $id The message ID
+	 * @return array A data array of the item and all its ancestors
+	 */
+	public function get_parents($id)
+	{
+		return $this->nestedset->get_path_data($id);
+	}
+
+	/**
+	 * Add padding, disabled and selected states to the canned messages data array
+	 * for proper display of them in drop down menus.
+	 *
+	 * @param array $rowset      Canned messages data
+	 * @param int   $selected_id The ID of the currently selected message/category
+	 * @return array
+	 */
+	public function messages_list($rowset, $selected_id = 0)
+	{
 		$right = 0;
 		$padding_store = array('0' => '');
 		$padding = '';
-		$cannedmessage_list = array();
+		$list = array();
 
 		foreach ($rowset as $row)
 		{
@@ -95,33 +147,41 @@ class manager
 			}
 
 			$right = $row['right_id'];
-			$disabled = $row['is_cat'] && $only_categories ? false : $row['is_cat'];
+			$disabled = $row['is_cat'] && $selected_id ? false : $row['is_cat'];
 			$selected = (int) $selected_id === (int) $row['cannedmessage_id'];
 
-			$cannedmessage_list[$row['cannedmessage_id']] = array_merge(array('padding' => $padding, 'disabled' => $disabled, 'selected' => $selected), $row);
+			$list[$row['cannedmessage_id']] = array_merge(array('padding' => $padding, 'disabled' => $disabled, 'selected' => $selected), $row);
 		}
-		unset($padding_store, $rowset);
 
-		return $cannedmessage_list;
+		return $list;
 	}
 
 	/**
-	 * Gets a specific message
+	 * Does the canned message contain children?
 	 *
-	 * @param $message_id	integer		The message ID to retrieve
-	 * @return array
+	 * @param array $row A canned message data array
+	 * @return bool True if children are present, false otherwise
 	 */
-	public function get_message($message_id)
+	public function has_children($row)
 	{
-		$sql = 'SELECT cannedmessage_id, parent_id, left_id, right_id, is_cat, cannedmessage_name, cannedmessage_content
-			FROM ' . $this->cannedmessages_table . '
-			WHERE cannedmessage_id = ' . (int) $message_id;
+		return $row['right_id'] - $row['left_id'] > 1;
+	}
 
-		$result = $this->db->sql_query_limit($sql, 1, 0, 3600);
-		$row = $this->db->sql_fetchrow($result);
+	/**
+	 * Is the item a category?
+	 *
+	 * @param int $id The item ID
+	 * @return bool True if it is, false if not
+	 */
+	public function is_cat($id)
+	{
+		$sql = 'SELECT is_cat FROM ' . $this->cannedmessages_table . '
+			WHERE cannedmessage_id = ' . (int) $id;
+		$result = $this->db->sql_query($sql);
+		$is_cat = $this->db->sql_fetchfield('is_cat');
 		$this->db->sql_freeresult($result);
 
-		return $row;
+		return (bool) $is_cat;
 	}
 
 	/**
@@ -165,9 +225,7 @@ class manager
 			return 'CANNEDMESSAGE_INVALID_ITEM';
 		}
 
-		if (!$cannedmessage_data['is_cat'] &&
-			$cannedmessage_old['is_cat'] != $cannedmessage_data['is_cat'] &&
-			count($this->nestedset->get_subtree_data($cannedmessage_data['cannedmessage_id'], false, false)))
+		if (!$cannedmessage_data['is_cat'] && $this->has_children($cannedmessage_old))
 		{
 			// Check to see if there are any children and fail out
 			// Review this later to see if we can show a "new parent category" field instead of showing an error
@@ -199,8 +257,7 @@ class manager
 		if ($cannedmessage_data['parent_id'])
 		{
 			// Check if the selected parent is a category
-			$row = $this->get_message($cannedmessage_data['parent_id']);
-			if (!$row['is_cat'])
+			if (!$this->is_cat($cannedmessage_data['parent_id']))
 			{
 				$this->delete_message($cannedmessage_new['cannedmessage_id']);
 				return 'CANNEDMESSAGE_PARENT_IS_NOT_CAT';

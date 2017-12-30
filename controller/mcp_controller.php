@@ -133,46 +133,26 @@ class mcp_controller
 	{
 		$parent_id = $this->request->variable('parent_id', 0);
 
-		// Get the parent name(s)
+		// Parent breadcrumb(s)
 		if ($parent_id)
 		{
-			$parents = array();
-			$parent_id_tracked = $parent_id;
-			while ($parent_id_tracked > 0)
-			{
-				$cannedmessage = $this->manager->get_message($parent_id_tracked);
-				if (count($cannedmessage))
-				{
-					$parents[] = array(
-						'name'			=> $cannedmessage['cannedmessage_name'],
-						'id'			=> $cannedmessage['cannedmessage_id'],
-					);
-					$parent_id_tracked = $cannedmessage['parent_id'];
-				}
-				else
-				{
-					break;
-				}
-			}
-
+			$parents = $this->manager->get_parents($parent_id);
 			if (count($parents))
 			{
 				// Add a 'main' placeholder
-				$parents[] = [
-					'name'	=> $this->language->lang('CANNEDMESSAGE_LIST'),
-					'id'	=> 0,
-				];
-				$parents = array_reverse($parents);
+				array_unshift($parents, [
+					'cannedmessage_name'	=> $this->language->lang('CANNEDMESSAGE_LIST'),
+					'cannedmessage_id'		=> 0,
+				]);
 
 				foreach ($parents as $parent)
 				{
 					$this->template->assign_block_vars('parents', array(
-						'PARENT_NAME'	=> $parent['name'],
-						'U_PARENT'		=> $this->get_main_u_action($parent['id']),
+						'PARENT_NAME'	=> $parent['cannedmessage_name'],
+						'U_PARENT'		=> $this->get_main_u_action($parent['cannedmessage_id']),
 					));
 				}
 			}
-			unset($parents);
 		}
 
 		foreach ($this->manager->get_messages($parent_id) as $cannedmessage_id => $cannedmessage_row)
@@ -302,15 +282,9 @@ class mcp_controller
 	{
 		$cannedmessage = $this->manager->get_message($cannedmessage_id);
 
-		if ($cannedmessage['is_cat'])
+		if ($cannedmessage['is_cat'] && $this->manager->has_children($cannedmessage))
 		{
-			// Check to see if there are any children
-			$cannedmessage_children = $this->manager->get_messages($cannedmessage_id);
-
-			if (count($cannedmessage_children))
-			{
-				trigger_error($this->language->lang('CANNEDMESSAGE_HAS_CHILDREN_DEL') . '<br /><br />' . $this->language->lang('RETURN_PAGE', '<a href="' . $this->get_main_u_action($cannedmessage['parent_id']) . '">', '</a>'));
-			}
+			trigger_error($this->language->lang('CANNEDMESSAGE_HAS_CHILDREN_DEL') . '<br /><br />' . $this->language->lang('RETURN_PAGE', '<a href="' . $this->get_main_u_action($cannedmessage['parent_id']) . '">', '</a>'));
 		}
 
 		if (confirm_box(true))
@@ -333,11 +307,6 @@ class mcp_controller
 	 */
 	protected function move_message($direction, $cannedmessage_id)
 	{
-		if (!$cannedmessage_id)
-		{
-			trigger_error($this->language->lang('CANNEDMESSAGE_INVALID_ITEM') . '<br /><br />' . $this->language->lang('RETURN_PAGE', '<a href="' . $this->get_main_u_action(0) . '">', '</a>'));
-		}
-
 		$cannedmessage = $this->manager->get_message($cannedmessage_id);
 
 		if (!$cannedmessage)
@@ -418,7 +387,7 @@ class mcp_controller
 			'U_ACTION'						=> $u_action,
 			'U_ACTION_CANCEL'				=> $this->get_main_u_action($cannedmessage_data['parent_id']),
 			'CANNESMESSAGE_NAME'			=> $cannedmessage_data['cannedmessage_name'],
-			'S_CANNEDMESSAGE_PARENTS'		=> $this->manager->get_messages(null, true, $cannedmessage_data['parent_id']),
+			'S_CANNEDMESSAGE_PARENTS'		=> $this->manager->get_categories($cannedmessage_data['parent_id']),
 			'IS_CAT'						=> $cannedmessage_data['is_cat'],
 			'CANNEDMESSAGE_CONTENT'			=> $cannedmessage_data['cannedmessage_content'],
 			'S_BBCODE_ALLOWED'				=> true,

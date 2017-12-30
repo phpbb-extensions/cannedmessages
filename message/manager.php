@@ -31,10 +31,10 @@ class manager
 	}
 
 	/**
-	 * Gets messages (all messages, or all messages within a given category)
+	 * Gets messages (all messages, or messages within a given category)
 	 * All messages will be cached to optimize posting pages
 	 *
-	 * @param int     $parent_id       Parent ID to filter by
+	 * @param int $parent_id Parent ID to filter by
 	 * @return array  Array
 	 */
 	public function get_messages($parent_id = null)
@@ -97,7 +97,7 @@ class manager
 	 * Add padding, disabled and selected states to the canned messages data array
 	 * for proper display of them in drop down menus.
 	 *
-	 * @param array $messages      Canned messages data
+	 * @param array $messages    Canned messages data
 	 * @param int   $selected_id The ID of the currently selected message/category
 	 * @return array
 	 */
@@ -256,7 +256,8 @@ class manager
 	 *
 	 * @param $id         int    The canned message id to be moved
 	 * @param $direction  string The direction to move the canned message
-	 * @return bool|string False if there the message was not moved, or the name of the message moved over if successful.
+	 * @return bool|string False if there the message was not moved, or the name of the message moved over if
+	 *                     successful.
 	 */
 	public function move_message($id, $direction)
 	{
@@ -293,7 +294,7 @@ class manager
 	/**
 	 * Update the parent id and re-sync the tree ids
 	 *
-	 * @param $id int     The message ID
+	 * @param $id     int     The message ID
 	 * @param $parent int The message's parent ID
 	 * @return bool|string Key of error message or false if no error occurred
 	 */

@@ -119,7 +119,6 @@ class mcp_controller
 		else if (in_array($this->action, array('move_up', 'move_down')))
 		{
 			$this->move_message($this->action, $this->request->variable('cannedmessage_id', 0));
-			return;
 		}
 
 		// Otherwise default to this

@@ -415,11 +415,7 @@ class mcp_controller
 	 */
 	public function log($action, $log_info)
 	{
-		if (!is_array($log_info))
-		{
-			$log_info = array($log_info);
-		}
-		$this->log->add('mod', $this->user->data['user_id'], $this->user->ip, "MCP_CANNEDMESSAGE_{$action}_LOG", time(), $log_info);
+		$this->log->add('mod', $this->user->data['user_id'], $this->user->ip, "MCP_CANNEDMESSAGE_{$action}_LOG", time(), (array) $log_info);
 	}
 
 	/**

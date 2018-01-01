@@ -33,10 +33,7 @@
 					<dd>
 						<select name="cannedmessage_parent" id="cannedmessage_parent">
 							<option value="0">{{ lang('NO_PARENT') }}</option>
-							{% for cannedmessage in S_CANNEDMESSAGE_PARENTS %}
-								<option value="{{ cannedmessage.cannedmessage_id }}" {% if cannedmessage.selected %}selected="selected" {% endif %}>{{ cannedmessage.padding }}{{ cannedmessage.cannedmessage_name }}</option>
-							{% endfor %}
-
+							{% include '@phpbb_cannedmessages/cannedmessage_list.html' %}
 						</select>
 					</dd>
 				</dl>

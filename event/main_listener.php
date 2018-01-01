@@ -93,7 +93,7 @@ class main_listener implements EventSubscriberInterface
 		{
 			$this->language->add_lang('posting', 'phpbb/cannedmessages');
 			$this->template->assign_vars(array(
-				'S_CANNEDMESSAGES'			=> $this->manager->get_messages(),
+				'S_CANNEDMESSAGES_LIST'		=> $this->manager->get_messages(),
 				'U_CANNEDMESSAGE_SELECTED'	=> $this->controller_helper->route('cannedmessage_selected', array('data' => 0)),
 			));
 		}

@@ -41,9 +41,6 @@ class get_messages_test extends manager_base
 	{
 		$this->assertEquals(array(
 			1 => array(
-				'padding'                => '',
-				'disabled'               => 1,
-				'selected'               => false,
 				'cannedmessage_id'       => 1,
 				'parent_id'              => 0,
 				'left_id'                => 1,
@@ -54,9 +51,6 @@ class get_messages_test extends manager_base
 				'cannedmessage_parents'  => '',
 			),
 			2 => array(
-				'padding'                => '&nbsp; &nbsp;',
-				'disabled'               => 0,
-				'selected'               => false,
 				'cannedmessage_id'       => 2,
 				'parent_id'              => 1,
 				'left_id'                => 2,
@@ -67,9 +61,6 @@ class get_messages_test extends manager_base
 				'cannedmessage_parents'  => '',
 			),
 			3 => array(
-				'padding'                => '&nbsp; &nbsp;',
-				'disabled'               => 0,
-				'selected'               => false,
 				'cannedmessage_id'       => 3,
 				'parent_id'              => 1,
 				'left_id'                => 4,
@@ -80,9 +71,6 @@ class get_messages_test extends manager_base
 				'cannedmessage_parents'  => '',
 			),
 			4 => array(
-				'padding'                => '',
-				'disabled'               => 1,
-				'selected'               => false,
 				'cannedmessage_id'       => 4,
 				'parent_id'              => 0,
 				'left_id'                => 7,

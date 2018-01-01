@@ -51,7 +51,7 @@ class manager
 			$this->cache->put('_canned_messages', $messages, 3600);
 		}
 
-		return $this->messages_list($messages);
+		return $messages;
 	}
 
 	/**
@@ -70,16 +70,15 @@ class manager
 	/**
 	 * Get message categories
 	 *
-	 * @param int $selected_id The ID of the currently selected message/category
 	 * @return array
 	 */
-	public function get_categories($selected_id = 0)
+	public function get_categories()
 	{
 		$categories = $this->nestedset
 			->set_sql_where('is_cat = 1')
 			->get_all_tree_data();
 
-		return $this->messages_list($categories, $selected_id);
+		return $categories;
 	}
 
 	/**
@@ -91,43 +90,6 @@ class manager
 	public function get_parents($id)
 	{
 		return $this->nestedset->get_path_data($id);
-	}
-
-	/**
-	 * Add padding, disabled and selected states to the canned messages data array
-	 * for proper display of them in drop down menus.
-	 *
-	 * @param array $messages    Canned messages data
-	 * @param int   $selected_id The ID of the currently selected message/category
-	 * @return array
-	 */
-	protected function messages_list($messages, $selected_id = 0)
-	{
-		$right = 0;
-		$padding_store = array('0' => '');
-		$padding = '';
-		$list = array();
-
-		foreach ($messages as $message)
-		{
-			if ($message['left_id'] < $right)
-			{
-				$padding .= '&nbsp; &nbsp;';
-				$padding_store[$message['parent_id']] = $padding;
-			}
-			else if ($message['left_id'] > $right + 1)
-			{
-				$padding = isset($padding_store[$message['parent_id']]) ? $padding_store[$message['parent_id']] : '';
-			}
-
-			$right = $message['right_id'];
-			$disabled = $message['is_cat'] && $selected_id ? false : $message['is_cat'];
-			$selected = (int) $selected_id === (int) $message['cannedmessage_id'];
-
-			$list[$message['cannedmessage_id']] = array_merge(array('padding' => $padding, 'disabled' => $disabled, 'selected' => $selected), $message);
-		}
-
-		return $list;
 	}
 
 	/**

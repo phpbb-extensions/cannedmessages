@@ -1,12 +1,10 @@
-{% if S_CANNEDMESSAGES %}
+{% if S_CANNEDMESSAGES_LIST %}
 	<dl style="clear: left;">
 		<dt><label for="cannedmessages">{{ lang('CANNEDMESSAGES') }}</label></dt>
 		<dd>
 			<select name="cannedmessages" id="cannedmessages">
 				<option value="" selected="selected">{{ lang('CANNEDMESSAGES') }}</option>
-				{% for cannedmessage in S_CANNEDMESSAGES %}
-					<option value="{{ cannedmessage.cannedmessage_id }}" {% if cannedmessage.disabled %}disabled="disabled" class="disabled-option" {% elseif cannedmessage.selected %}selected="selected" {% endif %}>{{ cannedmessage.padding }}{{ cannedmessage.cannedmessage_name }}</option>
-				{% endfor %}
+				{% include '@phpbb_cannedmessages/cannedmessage_list.html' %}
 			</select>
 		</dd>
 	</dl>

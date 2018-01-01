@@ -1,0 +1,15 @@
+{% set right, padding, nested = 0, '', {0: ''} %}
+{% for message in S_CANNEDMESSAGES_LIST %}
+	<option value="{{ message.cannedmessage_id }}"
+		{% if message.is_cat and S_CANNEDMESSAGE_SELECTED is not defined %} disabled="disabled" class="disabled-option"{% endif %}
+		{% if S_CANNEDMESSAGE_SELECTED == message.cannedmessage_id %} selected="selected"{% endif %}>
+		{% if message.left_id < right %}
+			{% set padding = padding ~ '&nbsp; &nbsp;' %}
+			{% set nested = nested|merge({(message.parent_id): padding}) %}
+		{% elseif message.left_id > right + 1 %}
+			{% set padding = (nested[message.parent_id] is defined ? nested[message.parent_id] : '') %}
+		{% endif %}
+		{{ padding }}{{ message.cannedmessage_name }}
+	</option>
+	{% set right = message.right_id %}
+{% endfor %}

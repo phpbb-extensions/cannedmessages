@@ -15,29 +15,22 @@ class get_categories_test extends manager_base
 	public function data_get_categories()
 	{
 		return array(
-			array(0, array(1, 4)),
-			array(1, array(1, 4)),
-			array(4, array(1, 4)),
+			array(array(1, 4)),
 		);
 	}
 
 	/**
 	 * @dataProvider data_get_categories
 	 */
-	public function test_get_categories($selected, $expected)
+	public function test_get_categories($expected)
 	{
-		$categories = $this->manager->get_categories($selected);
+		$categories = $this->manager->get_categories();
 
 		$this->assertCount(count($expected), $categories);
 
 		foreach ($expected as $expected_id)
 		{
 			$this->assertEquals($expected_id, $categories[$expected_id]['cannedmessage_id']);
-
-			if ($categories[$expected_id]['selected'])
-			{
-				$this->assertEquals($selected, $expected_id);
-			}
 		}
 	}
 }

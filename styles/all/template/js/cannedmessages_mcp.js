@@ -25,7 +25,12 @@ text_name = 'cannedmessage_content';
         $secondLi.insertBefore($firstLi);
     });
 
-    $(function() {
+	// This removes the parent row of the link or form that fired the callback.
+	phpbb.addAjaxCallback('row_delete', function() {
+		$(this).parents('li').remove();
+	});
+
+	$(function() {
 
         $('#is_cat1').on('change', function() {
            toggleContent($(this).is(':checked'));

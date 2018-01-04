@@ -3,7 +3,6 @@
 {% if S_CANNEDMESSAGE_ADD_OR_EDIT %}
 	{% INCLUDEJS T_ASSETS_PATH ~ '/javascript/editor.js' %}
 {% endif %}
-{% INCLUDEJS '@phpbb_cannedmessages/js/cannedmessages_mcp.js' %}
 
 <h2>{{ lang('MCP_CANNEDMESSAGES_TITLE') }}</h2>
 
@@ -34,10 +33,7 @@
 					<dd>
 						<select name="cannedmessage_parent" id="cannedmessage_parent">
 							<option value="0">{{ lang('NO_PARENT') }}</option>
-							{% for cannedmessage in S_CANNEDMESSAGE_PARENTS %}
-								<option value="{{ cannedmessage.cannedmessage_id }}" {% if cannedmessage.selected %}selected="selected" {% endif %}>{{ cannedmessage.padding }}{{ cannedmessage.cannedmessage_name }}</option>
-							{% endfor %}
-
+							{% include '@phpbb_cannedmessages/cannedmessage_list.html' %}
 						</select>
 					</dd>
 				</dl>
@@ -123,7 +119,7 @@
 						<span class="down-disabled" style="display:none;">{{ ICON_MOVE_DOWN_DISABLED }}</span>
 						<span class="down"><a href="{{ cannedmessage.U_MOVE_DOWN }}" data-ajax="row_down">{{ ICON_MOVE_DOWN }}</a></span>
 						<a href="{{ cannedmessage.U_EDIT }}">{{ ICON_EDIT }}</a>
-						<a href="{{ cannedmessage.U_DELETE }}">{{ ICON_DELETE }}</a>
+						<a href="{{ cannedmessage.U_DELETE }}" data-ajax="row_delete">{{ ICON_DELETE }}</a>
 					</dd>
 				</dl>
 			</li>
@@ -154,3 +150,5 @@
 </div>
 
 {% include 'mcp_footer.html' %}
+{# include our JS after the footer ensure it is loaded after core ajax.js, which we overrule #}
+{% INCLUDEJS '@phpbb_cannedmessages/js/cannedmessages_mcp.js' %}

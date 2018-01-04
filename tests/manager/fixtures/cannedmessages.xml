@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<dataset>
+	<table name="phpbb_cannedmessages">
+		<column>cannedmessage_id</column>
+		<column>parent_id</column>
+		<column>left_id</column>
+		<column>right_id</column>
+		<column>is_cat</column>
+		<column>cannedmessage_name</column>
+		<column>cannedmessage_content</column>
+		<column>cannedmessage_parents</column>
+		<row>
+			<value>1</value>
+			<value>0</value>
+			<value>1</value>
+			<value>6</value>
+			<value>1</value>
+			<value>Category 1</value>
+			<value></value>
+			<value></value>
+		</row>
+		<row>
+			<value>2</value>
+			<value>1</value>
+			<value>2</value>
+			<value>3</value>
+			<value>0</value>
+			<value>Message 1</value>
+			<value>Message 1 content</value>
+			<value></value>
+		</row>
+		<row>
+			<value>3</value>
+			<value>1</value>
+			<value>4</value>
+			<value>5</value>
+			<value>0</value>
+			<value>Message 2</value>
+			<value>Message 2 content</value>
+			<value></value>
+		</row>
+		<row>
+			<value>4</value>
+			<value>0</value>
+			<value>7</value>
+			<value>8</value>
+			<value>1</value>
+			<value>Category 2</value>
+			<value></value>
+			<value></value>
+		</row>
+	</table>
+</dataset>

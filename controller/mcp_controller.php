@@ -395,7 +395,10 @@ class mcp_controller
 		));
 
 		// Build custom bbcodes array
-		include_once "{$this->root_path}includes/functions_display.{$this->php_ext}";
+		if (!function_exists('display_custom_bbcodes'))
+		{
+			include "{$this->root_path}includes/functions_display.{$this->php_ext}";
+		}
 		display_custom_bbcodes();
 	}
 

@@ -23,9 +23,6 @@ class main_listener implements EventSubscriberInterface
 	/** @var \phpbb\template\template */
 	protected $template;
 
-	/** @var \phpbb\user */
-	protected $user;
-
 	/** @var \phpbb\auth\auth */
 	protected $auth;
 
@@ -54,18 +51,15 @@ class main_listener implements EventSubscriberInterface
 	 * Constructor
 	 *
 	 * @param \phpbb\template\template				$template			Template object
-	 * @param \phpbb\user							$user				User object
 	 * @param \phpbb\auth\auth						$auth				Permissions object
 	 * @param \phpbb\cannedmessages\message\manager $manager      		Canned Messages manager object
 	 * @param \phpbb\language\language           	$language     		Language object
 	 * @param \phpbb\controller\helper				$controller_helper	Controller helper object
 	 */
-	public function __construct(\phpbb\template\template $template, \phpbb\user $user, \phpbb\auth\auth $auth, \phpbb\cannedmessages\message\manager $manager, \phpbb\language\language $language, \phpbb\controller\helper $controller_helper)
+	public function __construct(\phpbb\template\template $template, \phpbb\auth\auth $auth, \phpbb\cannedmessages\message\manager $manager, \phpbb\language\language $language, \phpbb\controller\helper $controller_helper)
 	{
 		$this->template = $template;
-		$this->user = $user;
 		$this->auth = $auth;
-		$auth->acl($this->user->data);
 		$this->manager = $manager;
 		$this->language = $language;
 		$this->controller_helper = $controller_helper;

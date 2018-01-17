@@ -12,7 +12,6 @@ services:
         class: phpbb\cannedmessages\event\main_listener
         arguments:
             - '@template'
-            - '@user'
             - '@auth'
             - '@phpbb.cannedmessages.message.manager'
             - '@language'

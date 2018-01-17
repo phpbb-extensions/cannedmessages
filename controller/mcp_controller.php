@@ -393,6 +393,13 @@ class mcp_controller
 			'S_BBCODE_ALLOWED'				=> true,
 			'CANNEDMESSAGE_CONTENT_PREVIEW'	=> $cannedmessage_content_preview,
 		));
+
+		// Build custom bbcodes array
+		if (!function_exists('display_custom_bbcodes'))
+		{
+			include "{$this->root_path}includes/functions_display.{$this->php_ext}";
+		}
+		display_custom_bbcodes();
 	}
 
 	/**

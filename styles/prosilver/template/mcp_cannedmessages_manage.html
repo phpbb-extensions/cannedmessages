@@ -24,12 +24,12 @@
 			<form name="cannedmessage_add_edit" id="cannedmessage_add_edit" method="post" action="{{ U_ACTION }}">
 				<fieldset>
 					<dl>
-						<dt><label for="cannedmessage_name">{{ lang('CANNEDMESSAGE_NAME') }}{{ lang('COLON') }}</label></dt>
+						<dt><label for="cannedmessage_name">{{ lang('CANNEDMESSAGE_NAME') ~ lang('COLON') }}</label></dt>
 						<dd><input name="cannedmessage_name" id="cannedmessage_name" type="text" class="inputbox" maxlength="255" value="{{ CANNESMESSAGE_NAME }}" /></dd>
 					</dl>
 
 					<dl>
-						<dt><label for="cannedmessage_parent">{{ lang('CANNEDMESSAGE_PARENT') }}{{ lang('COLON') }}</label></dt>
+						<dt><label for="cannedmessage_parent">{{ lang('CANNEDMESSAGE_PARENT') ~ lang('COLON') }}</label></dt>
 						<dd>
 							<select name="cannedmessage_parent" id="cannedmessage_parent">
 								<option value="0">{{ lang('NO_PARENT') }}</option>
@@ -39,7 +39,7 @@
 					</dl>
 
 					<dl>
-						<dt><label for="is_cat1">{{ lang('CANNEDMESSAGE_IS_CAT') }}{{ lang('COLON') }}</label></dt>
+						<dt><label for="is_cat1">{{ lang('CANNEDMESSAGE_IS_CAT') ~ lang('COLON') }}</label></dt>
 						<dd>
 							<label for="is_cat1"><input type="radio" name="is_cat" id="is_cat1" value="1" {% if IS_CAT %}checked="checked"{% endif %}/> {{ lang('YES') }}</label>
 							<label for="is_cat0"><input type="radio" name="is_cat" id="is_cat0" value="0" {% if not IS_CAT %}checked="checked"{% endif %}/> {{ lang('NO') }}</label>
@@ -47,7 +47,7 @@
 					</dl>
 
 					<dl id="cannedmessage_content_section"{% if IS_CAT %} style="display: none;"{% endif %}>
-						<dt><label for="cannedmessage_content">{{ lang('CANNEDMESSAGE_CONTENT') }}{{ lang('COLON') }}</label></dt>
+						<dt><label for="cannedmessage_content">{{ lang('CANNEDMESSAGE_CONTENT') ~ lang('COLON') }}</label></dt>
 						<dd>
 							{% include 'posting_buttons.html' %}
 							<textarea name="cannedmessage_content" id="cannedmessage_content" class="inputbox" cols="40" rows="15">{{ CANNEDMESSAGE_CONTENT }}</textarea>
@@ -56,7 +56,7 @@
 
 					{% if CANNEDMESSAGE_CONTENT_PREVIEW %}
 					<dl id="cannedmessage_preview">
-						<dt><label>{{ lang('PREVIEW') }}{{ lang('COLON') }}</label></dt>
+						<dt><label>{{ lang('PREVIEW') ~ lang('COLON') }}</label></dt>
 						<dd>
 							<div class="post bg2">
 								<div class="inner">

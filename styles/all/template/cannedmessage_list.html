@@ -9,7 +9,7 @@
 		{% elseif message.left_id > right + 1 %}
 			{% set padding = (nested[message.parent_id] is defined ? nested[message.parent_id] : '') %}
 		{% endif %}
-		{{ padding }}{{ message.cannedmessage_name }}
+		{{ padding ~ message.cannedmessage_name }}
 	</option>
 	{% set right = message.right_id %}
 {% endfor %}

@@ -130,10 +130,10 @@ class main_listener_test extends \phpbb_test_case
 		$calls = $expected ? 'once' : 'never';
 
 		// Set expected auth calls
-		$this->auth->expects($this->any())
+		$this->auth->expects($this->atMost(1))
 			->method('acl_getf_global')
 			->with('m_')
-			->will($this->returnValue($expected));
+			->willReturn($expected);
 
 		// Set expected calls for add_lang()
 		$this->language->expects($this->$calls())

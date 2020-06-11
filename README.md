@@ -12,4 +12,4 @@ Go to "ACP" > "Customise" > "Extensions" and enable the "Canned Messages" extens
 
 ## License
 
-[GPLv2](license.txt)
+[GNU General Public License v2](license.txt)

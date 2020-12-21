@@ -29,17 +29,17 @@ class get_messages_test extends manager_base
 	{
 		$messages = $this->manager->get_messages($id);
 
-		$this->assertCount(count($expected), $messages);
+		self::assertCount(count($expected), $messages);
 
 		foreach ($expected as $expected_id)
 		{
-			$this->assertEquals($expected_id, $messages[$expected_id]['cannedmessage_id']);
+			self::assertEquals($expected_id, $messages[$expected_id]['cannedmessage_id']);
 		}
 	}
 
 	public function test_messages_list()
 	{
-		$this->assertEquals(array(
+		self::assertEquals(array(
 			1 => array(
 				'cannedmessage_id'       => 1,
 				'parent_id'              => 0,

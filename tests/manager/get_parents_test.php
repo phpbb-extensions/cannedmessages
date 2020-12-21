@@ -30,11 +30,11 @@ class get_parents_test extends manager_base
 	{
 		$parents = $this->manager->get_parents($id);
 
-		$this->assertCount(count($expected), $parents);
+		self::assertCount(count($expected), $parents);
 
 		foreach ($expected as $expected_id)
 		{
-			$this->assertEquals($expected_id, $parents[$expected_id]['cannedmessage_id']);
+			self::assertEquals($expected_id, $parents[$expected_id]['cannedmessage_id']);
 		}
 	}
 }

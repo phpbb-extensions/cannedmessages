@@ -38,7 +38,7 @@ class save_message_test extends manager_base
 	 */
 	public function test_insert_message($data)
 	{
-		$this->assertTrue($this->manager->save_message($data));
+		self::assertTrue($this->manager->save_message($data));
 	}
 
 	public function data_insert_message_fails()
@@ -54,7 +54,7 @@ class save_message_test extends manager_base
 	 */
 	public function test_insert_message_fails($data, $expected)
 	{
-		$this->assertEquals($expected, $this->manager->save_message($data));
+		self::assertEquals($expected, $this->manager->save_message($data));
 	}
 
 	public function data_update_message()
@@ -72,7 +72,7 @@ class save_message_test extends manager_base
 	 */
 	public function test_update_message($data)
 	{
-		$this->assertTrue($this->manager->save_message($data));
+		self::assertTrue($this->manager->save_message($data));
 	}
 
 	public function data_update_message_fails()
@@ -89,6 +89,6 @@ class save_message_test extends manager_base
 	 */
 	public function test_update_message_fails($data, $expected)
 	{
-		$this->assertEquals($expected, $this->manager->save_message($data));
+		self::assertEquals($expected, $this->manager->save_message($data));
 	}
 }

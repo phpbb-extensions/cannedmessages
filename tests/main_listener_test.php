@@ -33,7 +33,7 @@ class main_listener_test extends \phpbb_test_case
 	/**
 	 * {@inheritDoc}
 	 */
-	public function setUp()
+	protected function setUp(): void
 	{
 		parent::setUp();
 
@@ -66,7 +66,7 @@ class main_listener_test extends \phpbb_test_case
 	 */
 	public function test_construct()
 	{
-		$this->assertInstanceOf('\Symfony\Component\EventDispatcher\EventSubscriberInterface', $this->listener);
+		self::assertInstanceOf('\Symfony\Component\EventDispatcher\EventSubscriberInterface', $this->listener);
 	}
 
 	/**
@@ -74,7 +74,7 @@ class main_listener_test extends \phpbb_test_case
 	 */
 	public function test_getSubscribedEvents()
 	{
-		$this->assertEquals([
+		self::assertEquals([
 			'core.modify_mcp_modules_display_option',
 			'core.posting_modify_template_vars',
 			'core.ucp_pm_compose_modify_data',
@@ -97,7 +97,7 @@ class main_listener_test extends \phpbb_test_case
 	public function test_add_lang_to_mcp($module_name, $expected)
 	{
 		// Set expected calls for add_lang()
-		$this->language->expects(($expected ? $this->once() : $this->never()))
+		$this->language->expects(($expected ? self::once() : self::never()))
 			->method('add_lang')
 			->with('info_acp_cannedmessages', 'phpbb/cannedmessages');
 
@@ -130,7 +130,7 @@ class main_listener_test extends \phpbb_test_case
 		$calls = $expected ? 'once' : 'never';
 
 		// Set expected auth calls
-		$this->auth->expects($this->atMost(1))
+		$this->auth->expects(self::atMost(1))
 			->method('acl_getf_global')
 			->with('m_')
 			->willReturn($expected);

@@ -31,6 +31,6 @@ class has_children_test extends manager_base
 	{
 		$message = $this->manager->get_message($id);
 
-		$this->assertSame($expected, $this->manager->has_children($message));
+		self::assertSame($expected, $this->manager->has_children($message));
 	}
 }

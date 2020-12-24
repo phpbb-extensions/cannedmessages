@@ -15,12 +15,10 @@ class has_children_test extends manager_base
 	public function data_has_children()
 	{
 		return array(
-			array(0, false),
 			array(1, true),
 			array(2, false),
 			array(3, false),
 			array(4, false),
-			array(100, false),
 		);
 	}
 

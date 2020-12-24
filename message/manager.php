@@ -112,7 +112,7 @@ class manager
 	public function is_cat($id)
 	{
 		$message = $this->get_message($id);
-		return (bool) $message['is_cat'];
+		return $message ? (bool) $message['is_cat'] : false;
 	}
 
 	/**

@@ -29,6 +29,6 @@ class is_cat_test extends manager_base
 	 */
 	public function test_is_cat($id, $expected)
 	{
-		$this->assertSame($expected, $this->manager->is_cat($id));
+		self::assertSame($expected, $this->manager->is_cat($id));
 	}
 }

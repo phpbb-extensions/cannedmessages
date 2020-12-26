@@ -15,13 +15,13 @@ class delete_message_test extends manager_base
 	public function test_delete_message()
 	{
 		// Assert message ID 3 exists
-		$this->assertNotEmpty($this->manager->get_message(3));
+		self::assertNotEmpty($this->manager->get_message(3));
 
 		// Delete message 3
 		$this->manager->delete_message(3);
 
 		// Assert message ID 3 is deleted
-		$this->assertEmpty($this->manager->get_message(3));
+		self::assertEmpty($this->manager->get_message(3));
 	}
 
 	public function data_delete_message_fails()
@@ -34,11 +34,11 @@ class delete_message_test extends manager_base
 
 	/**
 	 * @dataProvider data_delete_message_fails
-	 * @expectedException \OutOfBoundsException
-	 * @expectedExceptionMessage CANNEDMESSAGE_INVALID_ITEM
 	 */
 	public function test_delete_message_fails($id)
 	{
+		$this->expectException(\OutOfBoundsException::class);
+		$this->expectExceptionMessage('CANNEDMESSAGE_INVALID_ITEM');
 		$this->manager->delete_message($id);
 	}
 }

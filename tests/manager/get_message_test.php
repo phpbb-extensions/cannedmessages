@@ -28,8 +28,8 @@ class get_message_test extends manager_base
 	{
 		$message = $this->manager->get_message($id);
 
-		$this->assertEquals($id, $message['cannedmessage_id']);
-		$this->assertEquals($expected, $message['cannedmessage_name']);
+		self::assertEquals($id, $message['cannedmessage_id']);
+		self::assertEquals($expected, $message['cannedmessage_name']);
 	}
 
 	public function data_get_message_fails()
@@ -46,6 +46,6 @@ class get_message_test extends manager_base
 	 */
 	public function test_get_message_fails($id)
 	{
-		$this->assertFalse($this->manager->get_message($id));
+		self::assertFalse($this->manager->get_message($id));
 	}
 }

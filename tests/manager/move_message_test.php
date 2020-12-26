@@ -84,10 +84,10 @@ class move_message_test extends manager_base
 			FROM phpbb_cannedmessages
 			ORDER BY left_id ASC');
 
-		$this->assertEquals($expected, $this->db->sql_fetchrowset($result));
+		self::assertEquals($expected, $this->db->sql_fetchrowset($result));
 		$this->db->sql_freeresult($result);
 
-		$this->assertEquals($affected_message, $test);
+		self::assertEquals($affected_message, $test);
 	}
 
 	/**
@@ -95,6 +95,6 @@ class move_message_test extends manager_base
 	 */
 	public function test_move_message_fails()
 	{
-		$this->assertFalse($this->manager->move_message(100, 'move_up'));
+		self::assertFalse($this->manager->move_message(100, 'move_up'));
 	}
 }

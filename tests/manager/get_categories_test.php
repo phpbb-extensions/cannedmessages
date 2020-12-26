@@ -26,11 +26,11 @@ class get_categories_test extends manager_base
 	{
 		$categories = $this->manager->get_categories();
 
-		$this->assertCount(count($expected), $categories);
+		self::assertCount(count($expected), $categories);
 
 		foreach ($expected as $expected_id)
 		{
-			$this->assertEquals($expected_id, $categories[$expected_id]['cannedmessage_id']);
+			self::assertEquals($expected_id, $categories[$expected_id]['cannedmessage_id']);
 		}
 	}
 }

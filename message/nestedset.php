@@ -60,6 +60,8 @@ class nestedset extends \phpbb\tree\nestedset
 	 */
 	public function update_item($item_id, array $item_data)
 	{
+		unset($item_data[$this->column_item_id]);
+
 		$sql = 'UPDATE ' . $this->table_name . '
 			SET ' . $this->db->sql_build_array('UPDATE', $item_data) . '
 			WHERE ' . $this->column_item_id . ' = ' . (int) $item_id;
@@ -77,8 +79,8 @@ class nestedset extends \phpbb\tree\nestedset
 	 */
 	public function affected_by_move($id, $delta)
 	{
-		$where = ($delta === 1 ? 'left_id' : 'right_id') . ' = (SELECT ' . ($delta === 1 ? 'right_id' : 'left_id') . ' 
-			FROM ' . $this->table_name . ' 
+		$where = ($delta === 1 ? 'left_id' : 'right_id') . ' = (SELECT ' . ($delta === 1 ? 'right_id' : 'left_id') . '
+			FROM ' . $this->table_name . '
 			WHERE cannedmessage_id = ' . (int) $id . ') + ' . $delta;
 
 		return current($this->set_sql_where($where)->get_all_tree_data());

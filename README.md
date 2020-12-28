@@ -2,7 +2,7 @@
 
 This is the repository for the development of the Canned Messages phpBB extension.
 
-[![Build Status](https://travis-ci.org/phpbb-extensions/cannedmessages.svg?branch=master)](https://travis-ci.org/phpbb-extensions/cannedmessages)
+[![Build Status](https://github.com/phpbb-extensions/cannedmessages/workflows/Tests/badge.svg)](https://github.com/phpbb-extensions/cannedmessages/actions)
 
 ## Installation
 

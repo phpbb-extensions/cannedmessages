@@ -29,7 +29,6 @@ services:
             - '@request'
             - '@phpbb.cannedmessages.message.manager'
             - '%core.root_path%'
-            - '%core.adm_relative_path%'
             - '%core.php_ext%'
 
     phpbb.cannedmessages.selected.controller:

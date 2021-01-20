@@ -162,15 +162,7 @@ class mcp_controller
 			));
 		}
 
-		$this->template->assign_vars(array(
-			'U_ACTION_ADD'				=> $this->get_main_u_action($parent_id) . '&amp;action=add',
-			'ICON_MOVE_UP'				=> '<i class="icon mcp-icon mcp-icon-move fa-arrow-circle-up fa-fw" title="' . $this->language->lang('MOVE_UP') . '"></i>',
-			'ICON_MOVE_UP_DISABLED'		=> '<i class="icon mcp-icon mcp-icon-disabled fa-arrow-circle-up fa-fw" title="' . $this->language->lang('MOVE_UP') . '"></i>',
-			'ICON_MOVE_DOWN'			=> '<i class="icon mcp-icon mcp-icon-move fa-arrow-circle-down fa-fw" title="' . $this->language->lang('MOVE_DOWN') . '"></i>',
-			'ICON_MOVE_DOWN_DISABLED'	=> '<i class="icon mcp-icon mcp-icon-disabled fa-arrow-circle-down fa-fw" title="' . $this->language->lang('MOVE_DOWN') . '"></i>',
-			'ICON_EDIT'					=> '<i class="icon mcp-icon mcp-icon-settings fa-cog fa-fw" title="' . $this->language->lang('EDIT') . '"></i>',
-			'ICON_DELETE'				=> '<i class="icon mcp-icon mcp-icon-delete fa-times-circle fa-fw" title="' . $this->language->lang('DELETE') . '"></i>',
-		));
+		$this->template->assign_var('U_ACTION_ADD',  $this->get_main_u_action($parent_id) . '&amp;action=add');
 	}
 
 	/**

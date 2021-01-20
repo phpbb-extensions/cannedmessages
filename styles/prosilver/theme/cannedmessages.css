@@ -42,3 +42,23 @@ ul li:first-child dd.message-list-actions .up-disabled,
 ul li:last-child dd.message-list-actions .down-disabled {
 	display: inline !important;
 }
+
+.mcp-icon {
+	font-size: 1rem;
+}
+
+.mcp-icon-move {
+	color: #4ba5de;
+}
+
+.mcp-icon-settings {
+	color: #62c046;
+}
+
+.mcp-icon-delete {
+	color: #d74558;
+}
+
+.mcp-icon-disabled {
+	color: #d0d0d0;
+}

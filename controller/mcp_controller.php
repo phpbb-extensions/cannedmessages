@@ -36,9 +36,6 @@ class mcp_controller
 	/** @var \phpbb\log\log */
 	protected $log;
 
-	/** @var string Admin path for images */
-	protected $phpbb_admin_images_path;
-
 	/** @var array List of errors */
 	protected $errors = array();
 
@@ -58,10 +55,9 @@ class mcp_controller
 	 * @param \phpbb\log\log                        $log               The phpBB log system
 	 * @param \phpbb\cannedmessages\message\manager $manager           Canned Messages manager object
 	 * @param string                                $root_path         phpBB root path
-	 * @param string                                $adm_relative_path Admin relative path
 	 * @param string                                $php_ext           PHP extension
 	 */
-	public function __construct(\phpbb\user $user, \phpbb\template\template $template, \phpbb\language\language $language, \phpbb\log\log $log, \phpbb\request\request $request, \phpbb\cannedmessages\message\manager $manager, $root_path, $adm_relative_path, $php_ext)
+	public function __construct(\phpbb\user $user, \phpbb\template\template $template, \phpbb\language\language $language, \phpbb\log\log $log, \phpbb\request\request $request, \phpbb\cannedmessages\message\manager $manager, $root_path, $php_ext)
 	{
 		$this->user = $user;
 		$this->template	= $template;
@@ -71,7 +67,6 @@ class mcp_controller
 		$this->log = $log;
 		$this->manager = $manager;
 		$this->request = $request;
-		$this->phpbb_admin_images_path = $adm_relative_path . 'images/';
 		$this->php_ext = $php_ext;
 		$this->root_path = $root_path;
 	}
@@ -169,14 +164,12 @@ class mcp_controller
 
 		$this->template->assign_vars(array(
 			'U_ACTION_ADD'				=> $this->get_main_u_action($parent_id) . '&amp;action=add',
-			'ICON_MOVE_UP'				=> '<img src="' . htmlspecialchars($this->phpbb_admin_images_path) . 'icon_up.gif" alt="' . $this->language->lang('MOVE_UP') . '" title="' . $this->language->lang('MOVE_UP') . '" />',
-			'ICON_MOVE_UP_DISABLED'		=> '<img src="' . htmlspecialchars($this->phpbb_admin_images_path) . 'icon_up_disabled.gif" alt="' . $this->language->lang('MOVE_UP') . '" title="' . $this->language->lang('MOVE_UP') . '" />',
-			'ICON_MOVE_DOWN'			=> '<img src="' . htmlspecialchars($this->phpbb_admin_images_path) . 'icon_down.gif" alt="' . $this->language->lang('MOVE_DOWN') . '" title="' . $this->language->lang('MOVE_DOWN') . '" />',
-			'ICON_MOVE_DOWN_DISABLED'	=> '<img src="' . htmlspecialchars($this->phpbb_admin_images_path) . 'icon_down_disabled.gif" alt="' . $this->language->lang('MOVE_DOWN') . '" title="' . $this->language->lang('MOVE_DOWN') . '" />',
-			'ICON_EDIT'					=> '<img src="' . htmlspecialchars($this->phpbb_admin_images_path) . 'icon_edit.gif" alt="' . $this->language->lang('EDIT') . '" title="' . $this->language->lang('EDIT') . '" />',
-			'ICON_EDIT_DISABLED'		=> '<img src="' . htmlspecialchars($this->phpbb_admin_images_path) . 'icon_edit_disabled.gif" alt="' . $this->language->lang('EDIT') . '" title="' . $this->language->lang('EDIT') . '" />',
-			'ICON_DELETE'				=> '<img src="' . htmlspecialchars($this->phpbb_admin_images_path) . 'icon_delete.gif" alt="' . $this->language->lang('DELETE') . '" title="' . $this->language->lang('DELETE') . '" />',
-			'ICON_DELETE_DISABLED'		=> '<img src="' . htmlspecialchars($this->phpbb_admin_images_path) . 'icon_delete_disabled.gif" alt="' . $this->language->lang('DELETE') . '" title="' . $this->language->lang('DELETE') . '" />',
+			'ICON_MOVE_UP'				=> '<i class="icon mcp-icon mcp-icon-move fa-arrow-circle-up fa-fw" title="' . $this->language->lang('MOVE_UP') . '"></i>',
+			'ICON_MOVE_UP_DISABLED'		=> '<i class="icon mcp-icon mcp-icon-disabled fa-arrow-circle-up fa-fw" title="' . $this->language->lang('MOVE_UP') . '"></i>',
+			'ICON_MOVE_DOWN'			=> '<i class="icon mcp-icon mcp-icon-move fa-arrow-circle-down fa-fw" title="' . $this->language->lang('MOVE_DOWN') . '"></i>',
+			'ICON_MOVE_DOWN_DISABLED'	=> '<i class="icon mcp-icon mcp-icon-disabled fa-arrow-circle-down fa-fw" title="' . $this->language->lang('MOVE_DOWN') . '"></i>',
+			'ICON_EDIT'					=> '<i class="icon mcp-icon mcp-icon-settings fa-cog fa-fw" title="' . $this->language->lang('EDIT') . '"></i>',
+			'ICON_DELETE'				=> '<i class="icon mcp-icon mcp-icon-delete fa-times-circle fa-fw" title="' . $this->language->lang('DELETE') . '"></i>',
 		));
 	}
 

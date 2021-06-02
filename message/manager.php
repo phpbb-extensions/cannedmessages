@@ -74,11 +74,9 @@ class manager
 	 */
 	public function get_categories()
 	{
-		$categories = $this->nestedset
+		return $this->nestedset
 			->set_sql_where('is_cat = 1')
 			->get_all_tree_data();
-
-		return $categories;
 	}
 
 	/**
@@ -112,7 +110,7 @@ class manager
 	public function is_cat($id)
 	{
 		$message = $this->get_message($id);
-		return $message ? (bool) $message['is_cat'] : false;
+		return $message && $message['is_cat'];
 	}
 
 	/**

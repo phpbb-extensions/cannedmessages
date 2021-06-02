@@ -17,7 +17,7 @@ class update_cannedmessages_schema extends \phpbb\db\migration\migration
 		return $this->db_tools->sql_column_exists($this->table_prefix . 'cannedmessages', 'cannedmessage_parents');
 	}
 
-	static public function depends_on()
+	public static function depends_on()
 	{
 		return array('\phpbb\cannedmessages\migrations\install_cannedmessages_schema');
 	}

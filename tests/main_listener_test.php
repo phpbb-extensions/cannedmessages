@@ -12,19 +12,19 @@ namespace phpbb\cannedmessages\tests\event;
 
 class main_listener_test extends \phpbb_test_case
 {
-	/** @var \PHPUnit_Framework_MockObject_MockObject|\phpbb\auth\auth */
+	/** @var \PHPUnit\Framework\MockObject\MockObject|\phpbb\auth\auth */
 	protected $auth;
 
-	/** @var \PHPUnit_Framework_MockObject_MockObject|\phpbb\controller\helper */
+	/** @var \PHPUnit\Framework\MockObject\MockObject|\phpbb\controller\helper */
 	protected $controller_helper;
 
-	/** @var \PHPUnit_Framework_MockObject_MockObject|\phpbb\language\language */
+	/** @var \PHPUnit\Framework\MockObject\MockObject|\phpbb\language\language */
 	protected $language;
 
-	/** @var \PHPUnit_Framework_MockObject_MockObject|\phpbb\cannedmessages\message\manager */
+	/** @var \PHPUnit\Framework\MockObject\MockObject|\phpbb\cannedmessages\message\manager */
 	protected $manager;
 
-	/** @var \PHPUnit_Framework_MockObject_MockObject|\phpbb\template\template */
+	/** @var \PHPUnit\Framework\MockObject\MockObject|\phpbb\template\template */
 	protected $template;
 
 	/** @var \phpbb\cannedmessages\event\main_listener */

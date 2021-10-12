@@ -114,12 +114,12 @@
 							</div>
 						</dt>
 						<dd class="message-list-actions">
-							<span class="up-disabled" style="display:none;"><i class="icon mcp-icon mcp-icon-disabled fa-arrow-circle-up fa-fw" title="{{ lang('MOVE_UP') }}"></i></span>
-							<span class="up"><a href="{{ cannedmessage.U_MOVE_UP }}"><i class="icon mcp-icon mcp-icon-move fa-arrow-circle-up fa-fw" title="{{ lang('MOVE_UP') }}"></i></a></span>
-							<span class="down-disabled" style="display:none;"><i class="icon mcp-icon mcp-icon-disabled fa-arrow-circle-down fa-fw" title="{{ lang('MOVE_DOWN') }}"></i></span>
-							<span class="down"><a href="{{ cannedmessage.U_MOVE_DOWN }}"><i class="icon mcp-icon mcp-icon-move fa-arrow-circle-down fa-fw" title="{{ lang('MOVE_DOWN') }}"></i></a></span>
-							<a href="{{ cannedmessage.U_EDIT }}"><i class="icon mcp-icon mcp-icon-settings fa-cog fa-fw" title="{{ lang('EDIT') }}"></i></a>
-							<a href="{{ cannedmessage.U_DELETE }}"><i class="icon mcp-icon mcp-icon-delete fa-times-circle fa-fw" title="{{ lang('DELETE') }}"></i></a>
+							<span class="up-disabled" style="display:none;">{{ Icon('iconify', 'fa-solid:arrow-circle-up', lang('MOVE_UP'), true, 'mcp-icon mcp-icon-disabled') }}</i></span>
+							<span class="up"><a href="{{ cannedmessage.U_MOVE_UP }}">{{ Icon('iconify', 'fa-solid:arrow-circle-up', lang('MOVE_UP'), true, 'mcp-icon mcp-icon-move') }}</a></span>
+							<span class="down-disabled" style="display:none;">{{ Icon('iconify', 'fa-solid:arrow-circle-down', lang('MOVE_DOWN'), true, 'mcp-icon mcp-icon-disabled') }}</i></span>
+							<span class="down"><a href="{{ cannedmessage.U_MOVE_DOWN }}">{{ Icon('iconify', 'fa-solid:arrow-circle-down', lang('MOVE_DOWN'), true, 'mcp-icon mcp-icon-move') }}</i></a></span>
+							<a href="{{ cannedmessage.U_EDIT }}">{{ Icon('iconify', 'fa-solid:cog', lang('EDIT'), true, 'mcp-icon mcp-icon-settings') }}</a>
+							<a href="{{ cannedmessage.U_DELETE }}">{{ Icon('iconify', 'fa-solid:times-circle', lang('DELETE'), true, 'mcp-icon mcp-icon-delete') }}</a>
 						</dd>
 					</dl>
 				</li>

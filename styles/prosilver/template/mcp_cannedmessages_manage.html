@@ -73,9 +73,9 @@
 				<hr />
 
 				<fieldset class="submit-buttons">
-					<input type="submit" name="preview" id="preview" value="{{ lang('PREVIEW') }}" class="button1"{% if IS_CAT %} style="display: none;"{% endif %} />
-					<input type="submit" name="submit" id="submit" value="{{ lang('SUBMIT') }}" class="button1" />
-					<input type="submit" name="cancel" id="cancel" value="{{ lang('CANCEL') }}" class="button2" />
+					<input type="submit" name="preview" id="preview" value="{{ lang('PREVIEW') }}" class="button1 button button-form"{% if IS_CAT %} style="display: none;"{% endif %} />
+					<input type="submit" name="submit" id="submit" value="{{ lang('SUBMIT') }}" class="button1 button button-form" />
+					<input type="submit" name="cancel" id="cancel" value="{{ lang('CANCEL') }}" class="button1 button button-form" />
 					<input type="hidden" name="action_cancel" id="action_cancel" value="{{ U_ACTION_CANCEL }}" />
 					{{ S_FORM_TOKEN }}
 				</fieldset>
@@ -140,8 +140,8 @@
 				<fieldset class="quick">
 					<input type="hidden" name="action" value="add" />
 
-					<input type="text" id="cannedmessage_name" name="cannedmessage_name" value="" maxlength="255" />
-					<input class="button2" id="addmessage" name="addmessage" type="submit" value="{{ lang('CREATE_CANNEDMESSAGE') }}" />
+					<input type="text" id="cannedmessage_name" name="cannedmessage_name" class="inputbox autowidth" value="" maxlength="255" />
+					<input class="button1 button button-form" id="addmessage" name="addmessage" type="submit" value="{{ lang('CREATE_CANNEDMESSAGE') }}" />
 					{{ S_FORM_TOKEN }}
 				</fieldset>
 			</form>

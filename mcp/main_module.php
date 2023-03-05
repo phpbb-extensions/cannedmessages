@@ -19,6 +19,11 @@ class main_module
 	public $tpl_name;
 	public $u_action;
 
+	/**
+	 * Main MCP module
+	 *
+	 * @throws \Exception
+	 */
 	public function main($id, $mode)
 	{
 		global $phpbb_container;

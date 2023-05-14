@@ -1,4 +1,4 @@
-cannedmessage_selected:
+phpbb_cannedmessages_selected:
     path: /cannedmessageselected/{data}
     defaults: { _controller: phpbb.cannedmessages.selected.controller:handle, mode: retrieve }
     requirements:

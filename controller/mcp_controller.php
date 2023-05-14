@@ -83,16 +83,6 @@ class mcp_controller
 	}
 
 	/**
-	 * Get MCP page title for Canned Messages module
-	 *
-	 * @return	string	Language string for Canned Messages MCP module
-	 */
-	public function get_page_title()
-	{
-		return $this->language->lang('MCP_CANNEDMESSAGES_TITLE');
-	}
-
-	/**
 	 * Process user request for manage mode
 	 *
 	 * @return	void

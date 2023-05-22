@@ -38,7 +38,7 @@ class main_module
 		$this->tpl_name = 'mcp_cannedmessages_' . $mode;
 
 		// Set the page title for our MCP page
-		$this->page_title = $mcp_controller->get_page_title();
+		$this->page_title = 'MCP_CANNEDMESSAGES_TITLE';
 
 		$mcp_controller->{'mode_' . $mode}();
 	}

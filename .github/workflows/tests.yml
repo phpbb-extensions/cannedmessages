@@ -21,7 +21,7 @@ on:
 jobs:
     # START Basic Checks Job (EPV, code sniffer, images check, etc.)
     basic-checks:
-        runs-on: ubuntu-20.04
+        runs-on: ubuntu-22.04
         strategy:
             matrix:
                 include:
@@ -33,14 +33,14 @@ jobs:
 
         steps:
             - name: Checkout phpBB
-              uses: actions/checkout@v3
+              uses: actions/checkout@v4
               with:
                   repository: phpbb/phpbb
                   ref: ${{ env.PHPBB_BRANCH }}
                   path: phpBB3
 
             - name: Checkout extension
-              uses: actions/checkout@v3
+              uses: actions/checkout@v4
               with:
                   path: phpBB3/phpBB/ext/${{ env.EXTNAME }}
 
@@ -89,7 +89,7 @@ jobs:
 
     # START MySQL and MariaDB Job
     mysql-tests:
-        runs-on: ubuntu-20.04
+        runs-on: ubuntu-22.04
         strategy:
             matrix:
                 include:
@@ -125,6 +125,8 @@ jobs:
                       db: "mysql:5.7"
                     - php: '8.3'
                       db: "mysql:5.7"
+                    - php: '8.4'
+                      db: "mysql:5.7"
 
         name: PHP ${{ matrix.php }} - ${{ matrix.db_alias != '' && matrix.db_alias || matrix.db }}
 
@@ -154,14 +156,14 @@ jobs:
 
         steps:
             - name: Checkout phpBB
-              uses: actions/checkout@v3
+              uses: actions/checkout@v4
               with:
                   repository: phpbb/phpbb
                   ref: ${{ env.PHPBB_BRANCH }}
                   path: phpBB3
 
             - name: Checkout extension
-              uses: actions/checkout@v3
+              uses: actions/checkout@v4
               with:
                   path: phpBB3/phpBB/ext/${{ env.EXTNAME }}
 
@@ -207,7 +209,7 @@ jobs:
 
     # START PostgreSQL Job
     postgres-tests:
-        runs-on: ubuntu-20.04
+        runs-on: ubuntu-22.04
         strategy:
             matrix:
                 include:
@@ -236,6 +238,8 @@ jobs:
                     - php: '8.2'
                       db: "postgres:14"
                     - php: '8.3'
+                      db: "postgres:14"
+                    - php: '8.4'
                       db: "postgres:14"
 
         name: PHP ${{ matrix.php }} - ${{ matrix.db }}
@@ -268,14 +272,14 @@ jobs:
 
         steps:
             - name: Checkout phpBB
-              uses: actions/checkout@v3
+              uses: actions/checkout@v4
               with:
                   repository: phpbb/phpbb
                   ref: ${{ env.PHPBB_BRANCH }}
                   path: phpBB3
 
             - name: Checkout extension
-              uses: actions/checkout@v3
+              uses: actions/checkout@v4
               with:
                   path: phpBB3/phpBB/ext/${{ env.EXTNAME }}
 
@@ -321,7 +325,7 @@ jobs:
 
     # START Other Tests Job (SQLite 3 and mssql)
     other-tests:
-        runs-on: ubuntu-20.04
+        runs-on: ubuntu-22.04
         strategy:
             matrix:
                 include:
@@ -363,14 +367,14 @@ jobs:
 
         steps:
             - name: Checkout phpBB
-              uses: actions/checkout@v3
+              uses: actions/checkout@v4
               with:
                   repository: phpbb/phpbb
                   ref: ${{ env.PHPBB_BRANCH }}
                   path: phpBB3
 
             - name: Checkout extension
-              uses: actions/checkout@v3
+              uses: actions/checkout@v4
               with:
                   path: phpBB3/phpBB/ext/${{ env.EXTNAME }}
 

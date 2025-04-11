@@ -24,7 +24,7 @@
 	"extra": {
 		"display-name": "Canned Messages",
 		"soft-require": {
-			"phpbb/phpbb": ">=4.0.0-dev"
+			"phpbb/phpbb": ">=4.0.0@dev"
 		}
 	}
 }

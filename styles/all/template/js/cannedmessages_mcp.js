@@ -30,6 +30,15 @@ text_name = 'cannedmessage_content';
 		$(this).parents('li').remove();
 	});
 
+	// Remove emoji and other non-standard characters from title
+	document.getElementById('cannedmessage_name').addEventListener('input', function(e) {
+		const noEmoji = e.target.value.replace(/[\u{1F300}-\u{1F9FF}]|[\u{2700}-\u{27BF}]|[\u{2600}-\u{26FF}]|[\u{2300}-\u{23FF}]|[\u{1F000}-\u{1F6FF}]|[\u{2B00}-\u{2BFF}]/gu, '');
+
+		if (e.target.value !== noEmoji) {
+			e.target.value = noEmoji;
+		}
+	});
+
 	$(function() {
 		var $add_edit = $('#cannedmessage_add_edit'),
 			$content = $('#cannedmessage_content_section'),

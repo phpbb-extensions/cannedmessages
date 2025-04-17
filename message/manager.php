@@ -129,6 +129,12 @@ class manager
 
 		$action = ($cannedmessage_data['cannedmessage_id'] > 0) ? 'update' : 'insert';
 
+		// Handle emojis in canned message
+		if (!empty($cannedmessage_data['cannedmessage_content']))
+		{
+			$cannedmessage_data['cannedmessage_content'] = utf8_encode_ucr($cannedmessage_data['cannedmessage_content']);
+		}
+
 		if ($error = $this->{$action}($cannedmessage_data))
 		{
 			return $error;

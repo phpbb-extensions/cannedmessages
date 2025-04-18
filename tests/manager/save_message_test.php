@@ -30,6 +30,7 @@ class save_message_test extends manager_base
 			array(array_merge($this->get_data_template(), array('is_cat' => 1))), // add new category
 			array(array_merge($this->get_data_template(), array('parent_id' => 1))), // add new message to Category 1
 			array(array_merge($this->get_data_template(), array('parent_id' => 1, 'is_cat' => 1))), // add new category to Category 1
+			array(array_merge($this->get_data_template(), array('cannedmessage_content' => 'Test content 😀'))), // add message with emoji
 		);
 	}
 

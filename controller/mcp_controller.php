@@ -258,7 +258,7 @@ class mcp_controller
 
 		if ($cannedmessage['is_cat'] && $this->manager->has_children($cannedmessage))
 		{
-			trigger_error($this->language->lang('CANNEDMESSAGE_HAS_CHILDREN_DEL') . '<br /><br />' . $this->language->lang('RETURN_PAGE', '<a href="' . $this->get_main_u_action($cannedmessage['parent_id']) . '">', '</a>'));
+			trigger_error($this->language->lang('CANNEDMESSAGE_HAS_CHILDREN_DEL') . '<br><br>' . $this->language->lang('RETURN_PAGE', '<a href="' . $this->get_main_u_action($cannedmessage['parent_id']) . '">', '</a>'));
 		}
 
 		if (confirm_box(true))
@@ -285,7 +285,7 @@ class mcp_controller
 
 		if (!$cannedmessage)
 		{
-			trigger_error($this->language->lang('CANNEDMESSAGE_INVALID_ITEM') . '<br /><br />' . $this->language->lang('RETURN_PAGE', '<a href="' . $this->get_main_u_action(0) . '">', '</a>'));
+			trigger_error($this->language->lang('CANNEDMESSAGE_INVALID_ITEM') . '<br><br>' . $this->language->lang('RETURN_PAGE', '<a href="' . $this->get_main_u_action(0) . '">', '</a>'));
 		}
 
 		$result = $this->manager->move_message($cannedmessage_id, $direction);
@@ -355,7 +355,7 @@ class mcp_controller
 		$has_errors = (bool) count($this->errors);
 		$this->template->assign_vars(array(
 			'S_ERROR'   => $has_errors,
-			'ERROR_MSG' => $has_errors ? implode('<br />', $this->errors) : '',
+			'ERROR_MSG' => $has_errors ? implode('<br>', $this->errors) : '',
 
 			'S_CANNEDMESSAGE_ADD_OR_EDIT'	=> true,
 			'U_ACTION'						=> $u_action,
@@ -413,6 +413,6 @@ class mcp_controller
 
 		$redirect = $this->get_main_u_action($cannedmessage['parent_id']);
 		meta_refresh(3, $redirect);
-		trigger_error($this->language->lang($message) . '<br /><br />' . $this->language->lang('RETURN_PAGE', '<a href="' . $redirect . '">', '</a>'));
+		trigger_error($this->language->lang($message) . '<br><br>' . $this->language->lang('RETURN_PAGE', '<a href="' . $redirect . '">', '</a>'));
 	}
 }

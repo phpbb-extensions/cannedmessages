@@ -12,7 +12,7 @@ namespace phpbb\cannedmessages\tests\manager;
 
 class get_messages_test extends manager_base
 {
-	public function data_get_messages()
+	public static function data_get_messages(): array
 	{
 		return array(
 			array(null, array(1, 2, 3, 4)), // all messages

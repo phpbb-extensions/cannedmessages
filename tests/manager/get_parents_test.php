@@ -12,7 +12,7 @@ namespace phpbb\cannedmessages\tests\manager;
 
 class get_parents_test extends manager_base
 {
-	public function data_get_parents()
+	public static function data_get_parents(): array
 	{
 		return array(
 			array(0, array()),

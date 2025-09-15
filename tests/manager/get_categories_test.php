@@ -12,7 +12,7 @@ namespace phpbb\cannedmessages\tests\manager;
 
 class get_categories_test extends manager_base
 {
-	public function data_get_categories()
+	public static function data_get_categories(): array
 	{
 		return array(
 			array(array(1, 4)),

@@ -12,7 +12,7 @@ namespace phpbb\cannedmessages\tests\manager;
 
 class move_message_test extends manager_base
 {
-	public function data_move_message()
+	public static function data_move_message(): array
 	{
 		return array(
 			array(

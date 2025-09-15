@@ -12,7 +12,7 @@ namespace phpbb\cannedmessages\tests\manager;
 
 class has_children_test extends manager_base
 {
-	public function data_has_children()
+	public static function data_has_children(): array
 	{
 		return array(
 			array(1, true),

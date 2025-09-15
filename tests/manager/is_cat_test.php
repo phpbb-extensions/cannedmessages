@@ -12,7 +12,7 @@ namespace phpbb\cannedmessages\tests\manager;
 
 class is_cat_test extends manager_base
 {
-	public function data_is_cat()
+	public static function data_is_cat(): array
 	{
 		return array(
 			array(0, false),

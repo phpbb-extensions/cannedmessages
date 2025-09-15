@@ -12,7 +12,7 @@ namespace phpbb\cannedmessages\tests\manager;
 
 class get_message_test extends manager_base
 {
-	public function data_get_message()
+	public static function data_get_message(): array
 	{
 		return array(
 			array(1, 'Category 1'),
@@ -32,7 +32,7 @@ class get_message_test extends manager_base
 		self::assertEquals($expected, $message['cannedmessage_name']);
 	}
 
-	public function data_get_message_fails()
+	public static function data_get_message_fails(): array
 	{
 		return array(
 			array(null),

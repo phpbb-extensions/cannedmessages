@@ -10,25 +10,36 @@
 
 namespace phpbb\cannedmessages\tests\event;
 
-class main_listener_test extends \phpbb_test_case
+use phpbb\auth\auth;
+use phpbb\cannedmessages\event\main_listener;
+use phpbb\cannedmessages\message\manager;
+use phpbb\controller\helper;
+use phpbb\event\data;
+use phpbb\language\language;
+use phpbb\template\template;
+use phpbb_test_case;
+use PHPUnit\Framework\MockObject\MockObject;
+use Symfony\Component\EventDispatcher\EventSubscriberInterface;
+
+class main_listener_test extends phpbb_test_case
 {
-	/** @var \PHPUnit\Framework\MockObject\MockObject|\phpbb\auth\auth */
-	protected $auth;
+	/** @var MockObject|auth */
+	protected auth|MockObject $auth;
 
-	/** @var \PHPUnit\Framework\MockObject\MockObject|\phpbb\controller\helper */
-	protected $controller_helper;
+	/** @var MockObject|helper */
+	protected helper|MockObject $controller_helper;
 
-	/** @var \PHPUnit\Framework\MockObject\MockObject|\phpbb\language\language */
-	protected $language;
+	/** @var MockObject|language */
+	protected language|MockObject $language;
 
-	/** @var \PHPUnit\Framework\MockObject\MockObject|\phpbb\cannedmessages\message\manager */
-	protected $manager;
+	/** @var MockObject|manager */
+	protected MockObject|manager $manager;
 
-	/** @var \PHPUnit\Framework\MockObject\MockObject|\phpbb\template\template */
-	protected $template;
+	/** @var MockObject|template */
+	protected template|MockObject $template;
 
-	/** @var \phpbb\cannedmessages\event\main_listener */
-	protected $listener;
+	/** @var main_listener */
+	protected main_listener $listener;
 
 	/**
 	 * {@inheritDoc}
@@ -37,22 +48,22 @@ class main_listener_test extends \phpbb_test_case
 	{
 		parent::setUp();
 
-		$this->auth = $this->getMockBuilder('\phpbb\auth\auth')
+		$this->auth = $this->getMockBuilder(auth::class)
 			->disableOriginalConstructor()
 			->getMock();
-		$this->controller_helper = $this->controller_helper = $this->getMockBuilder('\phpbb\controller\helper')
+		$this->controller_helper = $this->getMockBuilder(helper::class)
 			->disableOriginalConstructor()
 			->getMock();
-		$this->language = $this->getMockBuilder('\phpbb\language\language')
+		$this->language = $this->getMockBuilder(language::class)
 			->disableOriginalConstructor()
 			->getMock();
-		$this->manager = $this->getMockBuilder('\phpbb\cannedmessages\message\manager')
+		$this->manager = $this->getMockBuilder(manager::class)
 			->disableOriginalConstructor()
 			->getMock();
-		$this->template = $this->getMockBuilder('\phpbb\template\template')
+		$this->template = $this->getMockBuilder(template::class)
 			->disableOriginalConstructor()
 			->getMock();
-		$this->listener = new \phpbb\cannedmessages\event\main_listener(
+		$this->listener = new main_listener(
 			$this->template,
 			$this->auth,
 			$this->manager,
@@ -66,7 +77,7 @@ class main_listener_test extends \phpbb_test_case
 	 */
 	public function test_construct()
 	{
-		self::assertInstanceOf('\Symfony\Component\EventDispatcher\EventSubscriberInterface', $this->listener);
+		self::assertInstanceOf(EventSubscriberInterface::class, $this->listener);
 	}
 
 	/**
@@ -78,10 +89,10 @@ class main_listener_test extends \phpbb_test_case
 			'core.modify_mcp_modules_display_option',
 			'core.posting_modify_template_vars',
 			'core.ucp_pm_compose_modify_data',
-		], array_keys(\phpbb\cannedmessages\event\main_listener::getSubscribedEvents()));
+		], array_keys(main_listener::getSubscribedEvents()));
 	}
 
-	public function add_lang_to_mcp_data()
+	public static function add_lang_to_mcp_data(): array
 	{
 		return [
 			['mcp_logs', true],
@@ -107,13 +118,13 @@ class main_listener_test extends \phpbb_test_case
 		];
 
 		// Define event data object
-		$data = new \phpbb\event\data($data_map);
+		$data = new data($data_map);
 
 		// Call the method
 		$this->listener->add_lang_to_mcp($data);
 	}
 
-	public function posting_modify_template_vars_data()
+	public static function posting_modify_template_vars_data(): array
 	{
 		return [
 			[true],

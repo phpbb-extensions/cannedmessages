@@ -24,7 +24,7 @@ class delete_message_test extends manager_base
 		self::assertEmpty($this->manager->get_message(3));
 	}
 
-	public function data_delete_message_fails()
+	public static function data_delete_message_fails(): array
 	{
 		return array(
 			array(0),

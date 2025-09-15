@@ -12,25 +12,21 @@ namespace phpbb\cannedmessages\tests\manager;
 
 class save_message_test extends manager_base
 {
-	public function get_data_template()
+	public static function data_insert_message(): array
 	{
-		return array(
+		$template = array(
 			'cannedmessage_id'		=> 0,
 			'parent_id'				=> 0,
 			'is_cat'				=> 0,
 			'cannedmessage_name'	=> 'Test name',
 			'cannedmessage_content'	=> 'Test content',
 		);
-	}
-
-	public function data_insert_message()
-	{
 		return array(
-			array($this->get_data_template()), // add new message
-			array(array_merge($this->get_data_template(), array('is_cat' => 1))), // add new category
-			array(array_merge($this->get_data_template(), array('parent_id' => 1))), // add new message to Category 1
-			array(array_merge($this->get_data_template(), array('parent_id' => 1, 'is_cat' => 1))), // add new category to Category 1
-			array(array_merge($this->get_data_template(), array('cannedmessage_content' => 'Test content 😀'))), // add message with emoji
+			array($template), // add a new message
+			array(array_merge($template, array('is_cat' => 1))), // add a new category
+			array(array_merge($template, array('parent_id' => 1))), // add a new message to Category 1
+			array(array_merge($template, array('parent_id' => 1, 'is_cat' => 1))), // add a new category to Category 1
+			array(array_merge($template, array('cannedmessage_content' => 'Test content 😀'))), // add a message with emoji
 		);
 	}
 
@@ -42,11 +38,18 @@ class save_message_test extends manager_base
 		self::assertTrue($this->manager->save_message($data));
 	}
 
-	public function data_insert_message_fails()
+	public static function data_insert_message_fails(): array
 	{
+		$template = array(
+			'cannedmessage_id'		=> 0,
+			'parent_id'				=> 0,
+			'is_cat'				=> 0,
+			'cannedmessage_name'	=> 'Test name',
+			'cannedmessage_content'	=> 'Test content',
+		);
 		return array(
-			array(array_merge($this->get_data_template(), array('parent_id' => 2)), 'CANNEDMESSAGE_PARENT_IS_NOT_CAT'), // parent id is not a category
-			array(array_merge($this->get_data_template(), array('parent_id' => 100)), 'CANNEDMESSAGE_PARENT_IS_NOT_CAT'), // parent id is invalid
+			array(array_merge($template, array('parent_id' => 2)), 'CANNEDMESSAGE_PARENT_IS_NOT_CAT'), // parent id is not a category
+			array(array_merge($template, array('parent_id' => 100)), 'CANNEDMESSAGE_PARENT_IS_NOT_CAT'), // parent id is invalid
 		);
 	}
 
@@ -58,13 +61,20 @@ class save_message_test extends manager_base
 		self::assertEquals($expected, $this->manager->save_message($data));
 	}
 
-	public function data_update_message()
+	public static function data_update_message(): array
 	{
+		$template = array(
+			'cannedmessage_id'		=> 0,
+			'parent_id'				=> 0,
+			'is_cat'				=> 0,
+			'cannedmessage_name'	=> 'Test name',
+			'cannedmessage_content'	=> 'Test content',
+		);
 		return array(
-			array(array_merge($this->get_data_template(), array('cannedmessage_id' => 2, 'cannedmessage_name' => 'Updated name'))), // update message title
-			array(array_merge($this->get_data_template(), array('cannedmessage_id' => 2, 'cannedmessage_content' => 'Updated content'))), // update message content
-			array(array_merge($this->get_data_template(), array('cannedmessage_id' => 2, 'parent_id' => 4))), // update message parent
-			array(array_merge($this->get_data_template(), array('cannedmessage_id' => 2, 'is_cat' => 1))), // update message to category
+			array(array_merge($template, array('cannedmessage_id' => 2, 'cannedmessage_name' => 'Updated name'))), // update message title
+			array(array_merge($template, array('cannedmessage_id' => 2, 'cannedmessage_content' => 'Updated content'))), // update message content
+			array(array_merge($template, array('cannedmessage_id' => 2, 'parent_id' => 4))), // update message parent
+			array(array_merge($template, array('cannedmessage_id' => 2, 'is_cat' => 1))), // update message to category
 		);
 	}
 
@@ -76,12 +86,19 @@ class save_message_test extends manager_base
 		self::assertTrue($this->manager->save_message($data));
 	}
 
-	public function data_update_message_fails()
+	public static function data_update_message_fails(): array
 	{
+		$template = array(
+			'cannedmessage_id'		=> 0,
+			'parent_id'				=> 0,
+			'is_cat'				=> 0,
+			'cannedmessage_name'	=> 'Test name',
+			'cannedmessage_content'	=> 'Test content',
+		);
 		return array(
-			array(array_merge($this->get_data_template(), array('cannedmessage_id' => 100)), 'CANNEDMESSAGE_INVALID_ITEM'), // message does not exist
-			array(array_merge($this->get_data_template(), array('cannedmessage_id' => 2, 'parent_id' => 100)), 'CANNEDMESSAGE_INVALID_PARENT'), // parent does not exist
-			array(array_merge($this->get_data_template(), array('cannedmessage_id' => 1, 'is_cat' => 0)), 'CANNEDMESSAGE_HAS_CHILDREN'), // category has children
+			array(array_merge($template, array('cannedmessage_id' => 100)), 'CANNEDMESSAGE_INVALID_ITEM'), // message does not exist
+			array(array_merge($template, array('cannedmessage_id' => 2, 'parent_id' => 100)), 'CANNEDMESSAGE_INVALID_PARENT'), // parent does not exist
+			array(array_merge($template, array('cannedmessage_id' => 1, 'is_cat' => 0)), 'CANNEDMESSAGE_HAS_CHILDREN'), // category has children
 		);
 	}
 

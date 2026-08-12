@@ -12,6 +12,9 @@ namespace phpbb\cannedmessages\controller;
 
 class selected_controller
 {
+	/** @var \phpbb\auth\auth */
+	protected $auth;
+
 	/** @var \phpbb\cannedmessages\message\manager */
 	protected $manager;
 
@@ -21,11 +24,13 @@ class selected_controller
 	/**
 	 * Constructor
 	 *
-	 * @param \phpbb\cannedmessages\message\manager      $manager      Canned Messages manager object
-	 * @param \phpbb\request\request   $request	Request object
+	 * @param \phpbb\auth\auth                       $auth    Authentication object
+	 * @param \phpbb\cannedmessages\message\manager $manager Canned Messages manager object
+	 * @param \phpbb\request\request                 $request Request object
 	 */
-	public function __construct(\phpbb\cannedmessages\message\manager $manager, \phpbb\request\request $request)
+	public function __construct(\phpbb\auth\auth $auth, \phpbb\cannedmessages\message\manager $manager, \phpbb\request\request $request)
 	{
+		$this->auth = $auth;
 		$this->manager = $manager;
 		$this->request = $request;
 	}
@@ -40,7 +45,7 @@ class selected_controller
 	 */
 	public function handle($data, $mode)
 	{
-		if (!empty($data) && $this->request->is_ajax())
+		if ($this->auth->acl_getf_global('m_') && !empty($data) && $this->request->is_ajax())
 		{
 			$response = $this->{$mode}($data);
 

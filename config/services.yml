@@ -34,6 +34,7 @@ services:
     phpbb.cannedmessages.selected.controller:
         class: phpbb\cannedmessages\controller\selected_controller
         arguments:
+            - '@auth'
             - '@phpbb.cannedmessages.message.manager'
             - '@request'
 
